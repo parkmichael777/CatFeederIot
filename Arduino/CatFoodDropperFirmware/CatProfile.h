@@ -1,3 +1,6 @@
+#ifndef CATPROFILE_H
+#define CATPROFILE_H
+
 /* Server Structs */
 typedef struct {
     uint8_t maxRate;            // Max rate in grams/min.
@@ -24,3 +27,5 @@ typedef struct {
     portMUX_TYPE dataMux;
     bowlData data;
 } catProfile;
+
+#endif
