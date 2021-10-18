@@ -1,8 +1,11 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-/* Debug Configs */
+/* Debug Config */
 #define DEBUG_MODE  1        // Enable/Disable extra logging.
+
+/* Cat Bowl Config */
+#define NUM_CATS  3          // Number of supported cats.
 
 /* WiFi and Server Config */
 #define SSID          "NETGEAR13"

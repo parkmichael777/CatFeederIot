@@ -6,9 +6,8 @@
 #include "config.h"
 #include "CatProfile.h"
 
-int LED = 13;
-
 /* Globals */
+int LED = 13;
 catProfileServer updateBuffer[3] = {0}; // Stores pending updates to cat profiles.
 catProfile profile[3] = {0};            // Working copy of cat profiles.
 
@@ -47,7 +46,7 @@ void setup() {
   initTime();
 
   // Setup cat profiles
-//  initCatProfiles();
+  initCatProfiles();
 
   // Interrupt test
 //  interruptTest();
