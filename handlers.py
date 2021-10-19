@@ -21,4 +21,3 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
 #        print(mr1)
         
         self.wfile.write(profs)
-    

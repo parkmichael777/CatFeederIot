@@ -1,16 +1,56 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-/* Debug Config */
-#define DEBUG_MODE  1        // Enable/Disable extra logging.
-
 /* Cat Bowl Config */
-#define NUM_CATS  3          // Number of supported cats.
+#define NUM_CATS      3          // Number of supported cats.
+#define NUM_PORTIONS  5          // Max number of schedulable portions.
 
 /* WiFi and Server Config */
 #define SSID          "NETGEAR13"
 #define PWD           "largewater374"
 #define SERVER_IP     "192.168.1.3"
 #define SERVER_PORT   8000
+
+/* Debug Config */
+#define DEBUG_MODE    1        // Enable/Disable extra logging.
+#define VERBOSE_MODE  0        // Enable/Disable extra extra logging.
+
+// Debug print macro
+#if DEBUG_MODE
+#define debugPrint(tag, val) {             \
+          if ((tag) == NULL)               \
+            Serial.println();              \
+          else {                           \
+            Serial.print((tag));           \
+            if ((val) == NULL)             \
+              Serial.println();            \
+            else {                         \
+              Serial.print(": ");          \
+              Serial.println((val));       \
+            }                              \
+          }                                \
+        }
+#else
+#define debugPrint(x, y) {}
+#endif
+
+// Verbose print macro
+#if VERBOSE_MODE
+#define verbosePrint(tag, val) {         \
+          if ((tag) == NULL)               \
+            Serial.println();              \
+          else {                           \
+            Serial.print((tag));           \
+            if ((val) == NULL)             \
+              Serial.println();            \
+            else {                         \
+              Serial.print(": ");          \
+              Serial.println((val));       \
+            }                              \
+          }                                \
+        }
+#else
+#define verbosePrint(x, y) {}
+#endif
 
 #endif

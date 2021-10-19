@@ -1,11 +1,6 @@
 void initWiFi() {
-#if DEBUG_MODE
-  //  Serial.print("Number of networks found ");
-  //  Serial.println(WiFi.scanNetworks());
-
-  Serial.print("MAC Address: ");
-  Serial.println(WiFi.macAddress());
-#endif
+  verbosePrint("MAC Address", WiFi.macAddress());
+  verbosePrint("Number of networks found", WiFi.scanNetworks());
 
   // Connect to WiFi
   WiFi.mode(WIFI_STA);
@@ -28,42 +23,19 @@ void initTime() {
   sntp_init();
 }
 
-#if DEBUG_MODE
 void printCatProfiles() {
-  Serial.println("Cat Profile 0: ");
-  Serial.println(updateBuffer[0].maxRate);
-  Serial.println(updateBuffer[0].portionGrams);
-  Serial.println(updateBuffer[0].numPortions);
-  Serial.println(updateBuffer[0].portionTimes[0]);
-  Serial.println(updateBuffer[0].portionTimes[1]);
-  Serial.println(updateBuffer[0].portionTimes[2]);
-  Serial.println(updateBuffer[0].portionTimes[3]);
-  Serial.println(updateBuffer[0].portionTimes[4]);
-  Serial.println();
+  for (int i = 0; i < NUM_CATS; ++i) {
+    verbosePrint("Cat Profile " + String(i), NULL);
+    verbosePrint("Max Rate", updateBuffer[i].maxRate);
+    verbosePrint("Portion Grams", updateBuffer[i].portionGrams);
+    verbosePrint("Num Portions", updateBuffer[i].numPortions);
 
-  Serial.println("Cat Profile 1: ");
-  Serial.println(updateBuffer[1].maxRate);
-  Serial.println(updateBuffer[1].portionGrams);
-  Serial.println(updateBuffer[1].numPortions);
-  Serial.println(updateBuffer[1].portionTimes[0]);
-  Serial.println(updateBuffer[1].portionTimes[1]);
-  Serial.println(updateBuffer[1].portionTimes[2]);
-  Serial.println(updateBuffer[1].portionTimes[3]);
-  Serial.println(updateBuffer[1].portionTimes[4]);
-  Serial.println();
-  
-  Serial.println("Cat Profile 2: ");
-  Serial.println(updateBuffer[2].maxRate);
-  Serial.println(updateBuffer[2].portionGrams);
-  Serial.println(updateBuffer[2].numPortions);
-  Serial.println(updateBuffer[2].portionTimes[0]);
-  Serial.println(updateBuffer[2].portionTimes[1]);
-  Serial.println(updateBuffer[2].portionTimes[2]);
-  Serial.println(updateBuffer[2].portionTimes[3]);
-  Serial.println(updateBuffer[2].portionTimes[4]);
-  Serial.println();
+    for (int j = 0; j < NUM_PORTIONS; ++j)
+      verbosePrint("P" + String(j), updateBuffer[i].portionTimes[j]);
+
+    verbosePrint(NULL, NULL);
+  }
 }
-#endif
 
 void NetworkToHostL(uint8_t *bytes) {
   // ntohl/htonl function that works with floats
@@ -84,20 +56,40 @@ void initCatProfiles() {
   WiFiClient c;
   HttpClient client(c, SERVER_IP, SERVER_PORT);
 
-  do {
-    client.get("CatProfiles");
+  // Request CatProfiles
+  while (client.get("CatProfiles") == -1) {
+    delay(5000);
   }
-  while (client.responseStatusCode() != 200);
 
+  int status = client.responseStatusCode();
+
+  // Update profiles if new 
+  if (status == 200) {
+    
+  }
+  else if (status == 204) {
+    pass;
+  }
+  else {
+    debugPrint("Request failed; Response Code", status);
+    while(true);
+  }
+
+  // Retrieve response
   client.skipResponseHeaders();
-  Serial.print("Bytes Read: ");
-  Serial.println(client.read((uint8_t*)updateBuffer, 3 * sizeof(catProfileServer)));
 
-  for (int i = 0; i < NUM_CATS; ++i) {
+  xSemaphoreTake(updateLock, portMAX_DELAY);
+
+  client.read((uint8_t*)updateBuffer, 3 * sizeof(catProfileServer));
+
+  // Fix byte order of maxRate.
+  for (int i = 0; i < NUM_CATS; ++i)
     NetworkToHostL((uint8_t*)(&updateBuffer[i]));
-  }
 
-#if DEBUG_MODE
+  // Raise update flag
+  update = 1;
+
+  xSemaphoreGive(updateLock);
+
   printCatProfiles();
-#endif
 }

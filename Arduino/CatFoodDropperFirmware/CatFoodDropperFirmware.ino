@@ -8,8 +8,12 @@
 
 /* Globals */
 int LED = 13;
+
 catProfileServer updateBuffer[3] = {0}; // Stores pending updates to cat profiles.
 catProfile profile[3] = {0};            // Working copy of cat profiles.
+
+volatile int update = 0;
+SemaphoreHandle_t updateLock = xSemaphoreCreateMutex();
 
 void ISR() {
   digitalWrite(LED, !digitalRead(LED));
