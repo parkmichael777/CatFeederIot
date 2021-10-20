@@ -1,6 +1,6 @@
 #include <WiFi.h>
 #include <ArduinoHttpClient.h>
-#include <sys/time.h>
+#include <time.h>
 #include <esp_sntp.h>
 
 #include "config.h"
@@ -9,11 +9,11 @@
 /* Globals */
 int LED = 13;
 
-uint32_t catProfileVersion = 0;         // Unique index for cat profile; used to know when to update.
-catProfile profileBuffer[3] = {0};      // Working copy of cat profiles.
+uint32_t catProfileVersion = 0;           // ID for this cat profile; shows when update is needed.
+catProfile profileBuffer[NUM_CATS] = {0}; // Working copy of cat profiles.
 
-volatile int updateFlag = 0;            // Indicates whether pending catProfile update is available.
-catProfileServer updateBuffer[3] = {0}; // Stores pending updates to cat profiles.
+volatile int updateFlag = 0;                    // Bool: pending catProfile update is available?
+catProfileServer updateBuffer[NUM_CATS] = {0};  // Stores pending updates to cat profiles.
 SemaphoreHandle_t updateLock = xSemaphoreCreateMutex();
 
 void ISR() {

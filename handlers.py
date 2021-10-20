@@ -26,7 +26,7 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
         self.flush_headers()
 
         f = open(self.path, 'rb')
-        profs = f.read(33)
+        profs = f.read(78)
 
         f.close()
         

@@ -10,7 +10,7 @@ if __name__ == "__main__":
     
     # Create test files
     f = open("CatProfiles", "wb")
-    p = pack('!fBBBBBBBfBBBBBBBfBBBBBBB', 1.75, 1, 1, 1, 1, 1, 1, 1,
+    p = pack('!fBBLLLLLfBBLLLLLfBBLLLLL', 1.75, 1, 1, 1, 1, 1, 1, 1,
                                           2.75, 2, 2, 2, 2, 2, 2, 2,
                                           3.75, 3, 3, 3, 3, 3, 3, 3)
     
