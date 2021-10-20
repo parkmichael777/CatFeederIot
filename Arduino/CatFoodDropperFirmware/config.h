@@ -13,9 +13,9 @@
 
 /* Debug Config */
 #define DEBUG_MODE    1        // Enable/Disable extra logging.
-#define VERBOSE_MODE  0        // Enable/Disable extra extra logging.
+#define VERBOSE_MODE  1        // Enable/Disable extra extra logging.
 
-// Debug print macro
+// Print macro; activated via DEBUG_MODE.
 #if DEBUG_MODE
 #define debugPrint(tag, val) {             \
           if ((tag) == NULL)               \
@@ -34,9 +34,9 @@
 #define debugPrint(x, y) {}
 #endif
 
-// Verbose print macro
+// Print macro; activated via VERBOSE_MODE.
 #if VERBOSE_MODE
-#define verbosePrint(tag, val) {         \
+#define verbosePrint(tag, val) {           \
           if ((tag) == NULL)               \
             Serial.println();              \
           else {                           \
