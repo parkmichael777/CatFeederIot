@@ -1,6 +1,6 @@
 void initWiFi() {
   verbosePrint("MAC Address", WiFi.macAddress());
-  verbosePrint("Number of networks found", WiFi.scanNetworks());
+//  verbosePrint("Number of networks found", WiFi.scanNetworks());
 
   // Connect to WiFi
   WiFi.mode(WIFI_STA);
@@ -57,39 +57,50 @@ void initCatProfiles() {
   HttpClient client(c, SERVER_IP, SERVER_PORT);
 
   // Request CatProfiles
-  while (client.get("CatProfiles") == -1) {
-    delay(5000);
-  }
+  client.beginRequest();
+  client.get("CatProfiles");
+  client.sendHeader("Cat-Profile-Version", String(catProfileVersion));
+  client.endRequest();
 
   int status = client.responseStatusCode();
 
   // Update profiles if new 
   if (status == 200) {
-    
+
+    // Retrieve response
+    while (client.endOfHeadersReached() == false) {
+      client.headerAvailable();
+      
+      String headerName = client.readHeaderName();
+
+      if (headerName.equals("Cat-Profile-Version")) {
+        catProfileVersion = (uint32_t)(client.readHeaderValue().toInt());
+        client.skipResponseHeaders();
+      }
+    }
+  
+    xSemaphoreTake(updateLock, portMAX_DELAY);
+  
+    client.read((uint8_t*)updateBuffer, 3 * sizeof(catProfileServer));
+  
+    // Fix byte order of maxRate.
+    for (int i = 0; i < NUM_CATS; ++i)
+      NetworkToHostL((uint8_t*)(&updateBuffer[i]));
+  
+    // Raise update flag
+    update = 1;
+  
+    xSemaphoreGive(updateLock);
+
+    client.stop();
+
+    printCatProfiles();
   }
   else if (status == 204) {
-    pass;
+    debugPrint("No Content", NULL);
   }
   else {
-    debugPrint("Request failed; Response Code", status);
+    debugPrint("Error: Unhandled Response Code", status);
     while(true);
   }
-
-  // Retrieve response
-  client.skipResponseHeaders();
-
-  xSemaphoreTake(updateLock, portMAX_DELAY);
-
-  client.read((uint8_t*)updateBuffer, 3 * sizeof(catProfileServer));
-
-  // Fix byte order of maxRate.
-  for (int i = 0; i < NUM_CATS; ++i)
-    NetworkToHostL((uint8_t*)(&updateBuffer[i]));
-
-  // Raise update flag
-  update = 1;
-
-  xSemaphoreGive(updateLock);
-
-  printCatProfiles();
 }

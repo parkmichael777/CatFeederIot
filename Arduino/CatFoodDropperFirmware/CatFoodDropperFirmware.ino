@@ -9,6 +9,7 @@
 /* Globals */
 int LED = 13;
 
+uint32_t catProfileVersion = 0;         // Unique index for cat profile; used to know when to update.
 catProfileServer updateBuffer[3] = {0}; // Stores pending updates to cat profiles.
 catProfile profile[3] = {0};            // Working copy of cat profiles.
 
