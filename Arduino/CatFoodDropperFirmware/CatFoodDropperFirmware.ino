@@ -2,6 +2,7 @@
 #include <ArduinoHttpClient.h>
 #include <time.h>
 #include <esp_sntp.h>
+#include <esp_timer.h>
 
 #include "config.h"
 #include "CatProfile.h"
@@ -17,24 +18,53 @@ volatile int updateFlag = 0;                    // Bool: pending catProfile upda
 catProfileServer updateBuffer[NUM_CATS] = {0};  // Stores pending updates to cat profiles.
 SemaphoreHandle_t updateLock = xSemaphoreCreateMutex();
 
-void ISR() {
-  digitalWrite(LED, !digitalRead(LED));
+void ISR1(void* arg) {
+  debugPrint("Timer 1 End", esp_timer_get_time() / 1000);
+}
+
+void ISR2(void* arg) {
+  debugPrint("Timer 2 End", esp_timer_get_time() / 1000);
+}
+
+void ISR3(void* arg) {
+  debugPrint("Timer 3 End", esp_timer_get_time() / 1000);
 }
 
 void interruptTest() {
-  hw_timer_t *timer = NULL;
+  esp_timer_handle_t h1;
+  esp_timer_handle_t h2;
+  esp_timer_handle_t h3;
 
-  digitalWrite(LED, LOW);
+  const esp_timer_create_args_t arg1 = {
+    (esp_timer_cb_t)&ISR1, 
+    (void*)NULL, 
+    (esp_timer_dispatch_t)0, 
+    "Timer 1"
+  };
 
-  timer = timerBegin(0, 80, true);
-  timerAttachInterrupt(timer, &ISR, true);
+  const esp_timer_create_args_t arg2 = {
+    (esp_timer_cb_t)&ISR2, 
+    (void*)NULL, 
+    (esp_timer_dispatch_t)0, 
+    "Timer 2"
+  };
 
-  // Sets an alarm to sound every second
-  timerAlarmWrite(timer, 1000000, true);
+  const esp_timer_create_args_t arg3 = {
+    (esp_timer_cb_t)&ISR3, 
+    (void*)NULL, 
+    (esp_timer_dispatch_t)0, 
+    "Timer 3"
+  };
 
-  portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED;
- 
-  timerAlarmEnable(timer);
+  esp_timer_create(&arg1, &h1);
+  esp_timer_create(&arg2, &h2);
+  esp_timer_create(&arg3, &h3);
+
+  esp_timer_start_once(h1, 5000000);
+  esp_timer_start_once(h2, 5000000);
+  esp_timer_start_once(h3, 0);
+  esp_timer_stop(h3);
+  debugPrint("Timers Start", esp_timer_get_time() / 1000);
 }
 
 void setup() {
@@ -48,12 +78,12 @@ void setup() {
 #endif
 
   // Initialize System
-  initWiFi();
-  initTime();
-  initCatProfiles();
+//  initWiFi();
+//  initTime();
+//  initCatProfiles();
 
   // Interrupt test
-//  interruptTest();
+  interruptTest();
 
   // Time test
 }
