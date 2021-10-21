@@ -2,7 +2,7 @@
 #define CONFIG_H
 
 /* Cat Bowl Config */
-#define NUM_CATS      3          // Number of supported cats.
+#define NUM_CATS      3          // Max number of supported cats.
 #define NUM_PORTIONS  5          // Max number of schedulable portions.
 #define TIMELIMIT     (30 * 60)  // Number of seconds portion is available after portions starts.
 #define COOLDOWN      (60 * 60)  // Number of seconds before new portion starts 

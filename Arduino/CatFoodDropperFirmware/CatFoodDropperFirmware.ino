@@ -10,6 +10,7 @@
 int LED = 13;
 
 uint32_t catProfileVersion = 0;           // ID for this cat profile; shows when update is needed.
+uint32_t numCats = 0;                     // Number of profiles active on this device.
 catProfile profileBuffer[NUM_CATS] = {0}; // Working copy of cat profiles.
 
 volatile int updateFlag = 0;                    // Bool: pending catProfile update is available?

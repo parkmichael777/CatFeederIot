@@ -5,7 +5,8 @@ from struct import pack, unpack
 import numpy as np
 
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
-    server_version = np.uint(1)
+    profile_version = np.uint(1)
+    num_cats = 3
     pass
 
 class HTTPRequestHandler(BaseHTTPRequestHandler):
@@ -14,14 +15,15 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
         
 #        print(device_version)
         
-        if device_version == self.server.server_version:
+        if device_version == self.server.profile_version:
             self.send_response(204, "No Content")
             self.end_headers()
             self.flush_headers()
             return
     
         self.send_response(200, "OK")
-        self.send_header("Cat-Profile-Version", self.server.server_version)
+        self.send_header("Cat-Profile-Version", self.server.profile_version)
+        self.send_header("Cat-Quantity", self.server.num_cats)
         self.end_headers()
         self.flush_headers()
 
