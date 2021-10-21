@@ -30,64 +30,31 @@ void NetworkToHostL(uint8_t *bytes) {
 
 // Contacts server and sends get request for CatProfiles.
 // If update available, populates updateBuffer and raises update flag.
-void retrieveCatProfiles() {
+// Returns 0 on success and -1 on failure.
+int retrieveCatProfiles() {
   WiFiClient c;
   HttpClient client(c, SERVER_IP, SERVER_PORT);
 
   // Request CatProfiles
-  do {
-    client.beginRequest();
-    client.get("CatProfiles");
-    client.sendHeader("Cat-Profile-Version", String(catProfileVersion));
-    client.endRequest();
+  client.beginRequest();
+  client.get("CatProfiles");
+  client.sendHeader("Cat-Profile-Version", String(catProfileVersion));
+  client.endRequest();
 
-    delay(1000);
-  }
-  while (client.available() == 0);
+  delay(1000);
+
+  // Init will call this fn again if no request found.
+  // Normal operation will ignore this failure since it already polls periodically.
+  if (client.available() == 0)
+    return -1;
 
   int status = client.responseStatusCode();
 
   // Update profiles if new one received. 
-  if (status == 200) {
-    // Retrieve response
-    while (client.endOfHeadersReached() == false) {
-      client.headerAvailable();
-      
-      String headerName = client.readHeaderName();
-
-      if (headerName.equals("Cat-Profile-Version")) {
-        catProfileVersion = (uint32_t)(client.readHeaderValue().toInt());
-        client.skipResponseHeaders();
-      }
-    }
-  
-    xSemaphoreTake(updateLock, portMAX_DELAY);
-  
-    client.read((uint8_t*)updateBuffer, 3 * sizeof(catProfileServer));
-  
-    // Fix byte order of maxRate and portion times.
-    for (int i = 0; i < NUM_CATS; ++i) {
-      NetworkToHostL((uint8_t*)(&updateBuffer[i]));
-
-      for (int j = 0; j < NUM_PORTIONS; ++j) {
-        NetworkToHostL((uint8_t*)(&updateBuffer[i].portionTimes[j]));
-      }
-    }
-  
-    // Raise update flag
-    updateFlag = 1;
-  
-    xSemaphoreGive(updateLock);
-
-    client.stop();
-
-    printUpdateBuffer();
-  }
-  else if (status == 204) {
-    debugPrint("No Content", NULL);
-  }
-  else {
-    debugPrint("Error: Unhandled Response Code", status);
-    while(true);
-  }
+  if (status == 200)
+    return handle200OK(client);
+  else if (status == 204)
+    return handle204NoContent();
+  else
+    return handleStub(status);
 }

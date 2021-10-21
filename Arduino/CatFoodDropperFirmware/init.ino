@@ -27,6 +27,10 @@ void initTime() {
 
 // Retrieve cat profile from server and update device copy.
 void initCatProfiles() {
-  retrieveCatProfiles();
+  // -1 Means the GET Request failed, or the server hasn't been initialized with
+  // a valid Cat Profile yet. Wait until server is ready.
+  while (retrieveCatProfiles() == -1)
+    delay(5000);
+
   updateCatProfiles();
 }
