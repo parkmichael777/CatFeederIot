@@ -51,10 +51,12 @@ int retrieveCatProfiles() {
   int status = client.responseStatusCode();
 
   // Update profiles if new one received. 
-  if (status == 200)
-    return handle200OK(client);
-  else if (status == 204)
-    return handle204NoContent();
-  else
-    return handleStub(status);
+  switch (status) {
+    case 200:
+      return handle200OK(client);
+    case 204:
+      return handle204NoContent();
+    default:
+      return handleStub(status);
+  }
 }
