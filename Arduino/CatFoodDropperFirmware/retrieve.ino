@@ -35,10 +35,15 @@ void retrieveCatProfiles() {
   HttpClient client(c, SERVER_IP, SERVER_PORT);
 
   // Request CatProfiles
-  client.beginRequest();
-  client.get("CatProfiles");
-  client.sendHeader("Cat-Profile-Version", String(catProfileVersion));
-  client.endRequest();
+  do {
+    client.beginRequest();
+    client.get("CatProfiles");
+    client.sendHeader("Cat-Profile-Version", String(catProfileVersion));
+    client.endRequest();
+
+    delay(1000);
+  }
+  while (client.available() == 0);
 
   int status = client.responseStatusCode();
 

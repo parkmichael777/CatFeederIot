@@ -26,11 +26,7 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
         self.flush_headers()
 
         f = open(self.path, 'rb')
-        profs = f.read(78)
-
+        profs = f.read()
         f.close()
-        
-#        mr0, gp0, np0, t00, t01, t02, t03, t04, mr1, gp1, np1, t10, t11, t12, t13, t14, mr2, gp2, np2, t20, t21, t22, t23, t24 = unpack("!fBBBBBBBfBBBBBBBfBBBBBBB", profs)
-#        print(mr1)
         
         self.wfile.write(profs)
