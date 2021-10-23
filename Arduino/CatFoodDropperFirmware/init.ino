@@ -8,7 +8,7 @@ void initWiFi() {
   WiFi.begin(SSID, PWD);
 
   while (WiFi.status() != WL_CONNECTED) {
-#if DEBUG_MODE
+#if DEBUG_MODE || VERBOSE_MODE
     // Blink LED while connecting; leave on after connected
     digitalWrite(LED, LOW);
     delay(250);
@@ -19,16 +19,27 @@ void initWiFi() {
 }
 
 // Contact SNTP server and sync system time.
-void initTime() {
+void initSNTP() {
   sntp_setoperatingmode(SNTP_OPMODE_POLL);
   sntp_setservername(0, "pool.ntp.org");
   sntp_init();
 }
 
+// Create timers that can be used for interrupts for each profile.
+// See 'interrupts' file for more details.
+void initTimer() {
+  for (int i = 0; i < NUM_CATS; ++i)
+    esp_timer_create(&intrArgs[i], &profileBuffer[i].timerHandle);
+}
+
 // Retrieve cat profile from server and update device copy.
 void initCatProfiles() {
-  // -1 Means the GET Request failed, or the server hasn't been initialized with
-  // a valid Cat Profile yet. Wait until server is ready.
+  // Initialize data semaphores.
+  for (int i = 0; i < NUM_CATS; ++i)
+    profileBuffer[i].dataLock = xSemaphoreCreateMutex();
+
+  // Ret val of -1 means the server failed to respond correctly or on time. 
+  // Block until good resp received.
   while (retrieveCatProfiles() == -1)
     delay(5000);
 

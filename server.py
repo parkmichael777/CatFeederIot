@@ -3,6 +3,12 @@ import sys
 from handlers import ThreadedHTTPServer, HTTPRequestHandler
 from struct import pack
 
+def time(hour, min, pm):
+    if pm:
+        hour += 12
+        
+    return ((hour + 5) % 12) * 3600 + min * 60
+
 if __name__ == "__main__":
     server = ThreadedHTTPServer(("192.168.1.3", 8000), HTTPRequestHandler)
     
@@ -10,9 +16,9 @@ if __name__ == "__main__":
     
     # Create test files
     f = open("CatProfiles", "wb")
-    p = pack('!fBBLLLLLfBBLLLLLfBBLLLLL', 1.75, 1, 1, 1, 1, 1, 1, 1,
-                                          2.75, 2, 2, 2, 2, 2, 2, 2,
-                                          3.75, 3, 3, 3, 3, 3, 3, 3)
+    p = pack('!BfBBLLLLLBfBBLLLLLBfBBLLLLL', 1, 1.75, 1, 2, time(7, 38, 1), time(10, 3, 1), 1, 1, 1,
+                                             0, 2.75, 2, 2, 2, 2, 2, 2, 2,
+                                             0, 3.75, 3, 3, 3, 3, 3, 3, 3)
     
     f.write(p)
     

@@ -1,12 +1,15 @@
 // Prints contents of updateBuffer in human-readable form in VERBOSE_MODE.
 void printUpdateBuffer() {
   for (int i = 0; i < NUM_CATS; ++i) {
+    if (updateBuffer[i].inUse == 0)
+      continue;
+    
     verbosePrint("Cat Profile " + String(i + 1), NULL);
     verbosePrint("Max Rate", updateBuffer[i].maxRate);
     verbosePrint("Portion Grams", updateBuffer[i].portionGrams);
     verbosePrint("Num Portions", updateBuffer[i].numPortions);
 
-    for (int j = 0; j < NUM_PORTIONS; ++j)
+    for (int j = 0; j < updateBuffer[i].numPortions; ++j)
       verbosePrint("P" + String(j), updateBuffer[i].portionTimes[j]);
 
     verbosePrint(NULL, NULL);
@@ -43,8 +46,10 @@ int retrieveCatProfiles() {
 
   delay(1000);
 
-  // Init will call this fn again if no request found.
-  // Normal operation will ignore this failure since it already polls periodically.
+  /* Fail if no response recv after 1 second:
+   * - Init will call this fn again if no request found.
+   * - Normal operation will ignore this failure since it already polls periodically.
+   */
   if (client.available() == 0)
     return -1;
 

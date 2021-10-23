@@ -2,10 +2,10 @@
 #define CONFIG_H
 
 /* Cat Bowl Config */
-#define NUM_CATS      3          // Max number of supported cats.
-#define NUM_PORTIONS  5          // Max number of schedulable portions.
-#define TIMELIMIT     (30 * 60)  // Number of seconds portion is available after portions starts.
-#define COOLDOWN      (60 * 60)  // Number of seconds before new portion starts 
+#define NUM_CATS      3          // Max num of supported cats. 
+                                 // Note: Changing NUM_CATS requires manual additions to intrArgs :(
+#define NUM_PORTIONS  5          // Max num of schedulable portions.
+#define FEED_PERIOD   (60 * 60)  // Number of seconds portion is available after portions start.
 
 /* WiFi and Server Config */
 #define SSID          "NETGEAR13"

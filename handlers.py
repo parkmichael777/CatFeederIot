@@ -6,7 +6,6 @@ import numpy as np
 
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
     profile_version = np.uint(1)
-    num_cats = 3
     pass
 
 class HTTPRequestHandler(BaseHTTPRequestHandler):
@@ -23,7 +22,6 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
     
         self.send_response(200, "OK")
         self.send_header("Cat-Profile-Version", self.server.profile_version)
-        self.send_header("Cat-Quantity", self.server.num_cats)
         self.end_headers()
         self.flush_headers()
 
