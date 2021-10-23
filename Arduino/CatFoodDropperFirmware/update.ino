@@ -31,6 +31,32 @@ time_t getTimeUTC() {
   return t.tm_hour * 3600 + t.tm_min * 60 + t.tm_sec;
 }
 
+// Update state to be in feeding period + register end time intr.
+void updateToFeeding(catProfile *p, time_t currTime, time_t prevTime) {
+  p->canEat = 1;
+
+  debugPrint("Registered end time in", prevTime + FEED_PERIOD - currTime);
+
+  assert(prevTime + FEED_PERIOD > currTime);
+  esp_timer_start_once(p->timerHandle, (prevTime + FEED_PERIOD - currTime) * 1000000);
+}
+
+// Upodate state to be in waiting period + register start time intr.
+void updateToWaiting(catProfile *p, time_t currTime, time_t nextTime) {
+  p->canEat = 0;
+  p->inProgress = 0;
+  p->isComplete = 0;
+  
+  xSemaphoreTake(p->dataLock, portMAX_DELAY);
+  p->dataFlag = 1;
+  xSemaphoreGive(p->dataLock);
+  
+  debugPrint("Registered start time in", nextTime - currTime);
+  
+  assert(nextTime > currTime);
+  esp_timer_start_once(p->timerHandle, (nextTime - currTime) * 1000000);
+}
+
 // Register next timer interrupt for passed in profile.
 void updateState(catProfile *p) {
   esp_timer_stop(p->timerHandle);
@@ -40,15 +66,28 @@ void updateState(catProfile *p) {
   time_t currTime = getTimeUTC();
   
   if (currTime < p->portionTimes[0]) {
-    // TODO: Register interrupt for first portion.
+    // System initialized with currTime < all portionTimes.
+    time_t nextTime = p->portionTimes[0];
+    updateToWaiting(p, currTime, nextTime);
   }
   else if (currTime > p->portionTimes[p->numPortions - 1]) {
-    // TODO: Register interrupt for rollover or last portion end.
+    // System is has consumed last portionTime start.
+    
+    // Set prevTime as last portionTime and nextTime as rollover/first portionTime.
+    time_t prevTime = p->portionTimes[p->numPortions - 1];
+    time_t nextTime = p->portionTimes[0];
+
+    // Initialize state and register based on which period we are in.
+    if (currTime < prevTime + FEED_PERIOD)
+      updateToFeeding(p, currTime, prevTime);
+    else
+      updateToWaiting(p, currTime, nextTime);
   }
   else {
+    // System is somewhere in the middle of portionTimes.
     time_t nextTime, prevTime;
 
-    // Find which scheduled times border the currTime.
+    // Find which portionTimes surround the currTime
     for (int i = 0; i < p->numPortions; ++i) {
       if (currTime > p->portionTimes[i])
         continue;
@@ -56,31 +95,12 @@ void updateState(catProfile *p) {
       nextTime = p->portionTimes[i];
       prevTime = p->portionTimes[i - 1];
     }
-    
-    if (currTime < prevTime + FEED_PERIOD) {
-      // Register end time interrupt (i.e. Update state to be in feeding period).
-      p->canEat = 1;
 
-      debugPrint("Registered end time in", prevTime + FEED_PERIOD - currTime);
-
-      assert(prevTime + FEED_PERIOD > currTime);
-      esp_timer_start_once(p->timerHandle, (prevTime + FEED_PERIOD - currTime) * 1000000);
-    }
-    else {
-      // Register start time interrupt (i.e. Update state to be in waiting period).
-      p->canEat = 0;
-      p->inProgress = 0;
-      p->isComplete = 0;
-
-      xSemaphoreTake(p->dataLock, portMAX_DELAY);
-      p->dataFlag = 1;
-      xSemaphoreGive(p->dataLock);
-
-      debugPrint("Registered start time in", nextTime - currTime);
-
-      assert(nextTime > currTime);
-      esp_timer_start_once(p->timerHandle, (nextTime - currTime) * 1000000);
-    }
+    // Initialize state and register based on which period we are in.
+    if (currTime < prevTime + FEED_PERIOD)
+      updateToFeeding(p, currTime, prevTime);
+    else
+      updateToWaiting(p, currTime, nextTime);
   }
 }
 

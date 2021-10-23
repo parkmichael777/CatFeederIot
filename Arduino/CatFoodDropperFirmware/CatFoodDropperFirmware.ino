@@ -22,6 +22,7 @@ void ISR(void* arg) {
   volatile uint8_t *timeEINTR = (volatile uint8_t *)arg;
 
   *timeEINTR = 1;
+  debugPrint("ISR Fired", 0);
 }
 
 const esp_timer_create_args_t intrArgs[] = {
@@ -60,13 +61,7 @@ void setup() {
   initSNTP();
   initTimer();
   initCatProfiles();
-
-  // Interrupt test
-//  interruptTest();
-
-  // Time test
 }
 
 void loop() {
-
 }
