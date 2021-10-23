@@ -23,23 +23,25 @@ void printProfileBuffer() {
 
 // Returns number of seconds passed since CST (UTC-6) 00:00 with DST adjustment.
 time_t getTime() {
-  time_t sec;
+  struct timeval tv;
   struct tm t;
 
-  time(&sec);
-  localtime_r(&sec, &t);
+  gettimeofday(&tv, NULL);
+  localtime_r(&tv.tv_sec, &t);
 
-  return t.tm_hour * 3600 + t.tm_min * 60 + t.tm_sec;
+  return t.tm_hour * 3600000 + t.tm_min * 60000 + t.tm_sec * 1000 + (tv.tv_usec / 1000);
 }
 
 // Update state to be in feeding period + register end time intr.
 void updateToFeeding(catProfile *p, time_t currTime, time_t prevTime) {
   p->canEat = 1;
 
-  debugPrint("Registered end time in", prevTime + FEED_PERIOD - currTime);
+  verbosePrint("P+FDTime", prevTime + FEED_PERIOD);
+  verbosePrint("CurrTime", currTime);
+  verbosePrint("Registered end time in", prevTime + FEED_PERIOD - currTime);
 
   assert(prevTime + FEED_PERIOD > currTime);
-  esp_timer_start_once(p->timerHandle, (prevTime + FEED_PERIOD - currTime) * 1000000);
+  esp_timer_start_once(p->timerHandle, (prevTime + FEED_PERIOD - currTime) * 1000);
 }
 
 // Upodate state to be in waiting period + register start time intr.
@@ -51,11 +53,13 @@ void updateToWaiting(catProfile *p, time_t currTime, time_t nextTime) {
   xSemaphoreTake(p->dataLock, portMAX_DELAY);
   p->dataFlag = 1;
   xSemaphoreGive(p->dataLock);
-  
-  debugPrint("Registered start time in", nextTime - currTime);
+
+  verbosePrint("NextTime", nextTime);
+  verbosePrint("CurrTime", currTime);
+  verbosePrint("Registered start time in", nextTime - currTime);
   
   assert(nextTime > currTime);
-  esp_timer_start_once(p->timerHandle, (nextTime - currTime) * 1000000);
+  esp_timer_start_once(p->timerHandle, (nextTime - currTime) * 1000);
 }
 
 // Register next timer interrupt for passed in profile.
@@ -67,22 +71,28 @@ void updateState(catProfile *p) {
   time_t currTime = getTime();
   
   if (currTime < p->portionTimes[0]) {
+    debugPrint("Type 1", NULL);
+    
     // System initialized with currTime < all portionTimes.
     time_t nextTime = p->portionTimes[0];
     updateToWaiting(p, currTime, nextTime);
   }
-  else if (currTime > p->portionTimes[p->numPortions - 1]) {
+  else if (currTime >= p->portionTimes[p->numPortions - 1]) {
     // System is has consumed last portionTime start.
     
     // Set prevTime as last portionTime and nextTime as rollover/first portionTime.
     time_t prevTime = p->portionTimes[p->numPortions - 1];
-    time_t nextTime = p->portionTimes[0];
+    time_t nextTime = p->portionTimes[0] + DAY;
 
     // Initialize state and register based on which period we are in.
-    if (currTime < prevTime + FEED_PERIOD)
+    if (currTime < prevTime + FEED_PERIOD) {
+      debugPrint("Type 2.1", NULL);
       updateToFeeding(p, currTime, prevTime);
-    else
+    }
+    else {
+      debugPrint("Type 2.2", NULL);
       updateToWaiting(p, currTime, nextTime);
+    } 
   }
   else {
     // System is somewhere in the middle of portionTimes.
@@ -90,18 +100,23 @@ void updateState(catProfile *p) {
 
     // Find which portionTimes surround the currTime
     for (int i = 0; i < p->numPortions; ++i) {
-      if (currTime > p->portionTimes[i])
+      if (currTime >= p->portionTimes[i])
         continue;
 
       nextTime = p->portionTimes[i];
       prevTime = p->portionTimes[i - 1];
+      break;
     }
 
     // Initialize state and register based on which period we are in.
-    if (currTime < prevTime + FEED_PERIOD)
+    if (currTime < prevTime + FEED_PERIOD) {
+      debugPrint("Type 3.1", NULL);
       updateToFeeding(p, currTime, prevTime);
-    else
+    }
+    else {
+      debugPrint("Type 3.2", NULL);
       updateToWaiting(p, currTime, nextTime);
+    }
   }
 }
 

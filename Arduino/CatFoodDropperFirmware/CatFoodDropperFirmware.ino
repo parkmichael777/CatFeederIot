@@ -22,7 +22,7 @@ void ISR(void* arg) {
   volatile uint8_t *timeEINTR = (volatile uint8_t *)arg;
 
   *timeEINTR = 1;
-  debugPrint("ISR Fired", 0);
+  debugPrint("ISR Fired", NULL);
 }
 
 const esp_timer_create_args_t intrArgs[] = {
@@ -64,4 +64,11 @@ void setup() {
 }
 
 void loop() {
+  // Test interrupt scheduling
+  if (profileBuffer[0].timeEINTR)
+    updateState(&profileBuffer[0]);
+  else if (profileBuffer[1].timeEINTR)
+    updateState(&profileBuffer[1]);
+  else if (profileBuffer[2].timeEINTR)
+    updateState(&profileBuffer[2]);
 }
