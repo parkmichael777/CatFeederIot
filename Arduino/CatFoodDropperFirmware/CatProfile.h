@@ -7,7 +7,7 @@ typedef struct __attribute__((__packed__)) {
     float maxRate;                          // Max rate in grams/min.
     uint8_t portionGrams;                   // Weight dispensed in one portion.
     uint8_t numPortions;                    // Number of active indices in portionTimes.
-    uint32_t portionTimes[NUM_PORTIONS];    // Time in minutes since 00:00 relative to UTC.
+    uint32_t portionTimes[NUM_PORTIONS];    // Time in minutes since 00:00 relative to CST.
 } catProfileServer;
 
 /* Device Structs */
@@ -21,7 +21,7 @@ typedef struct __attribute__((__packed__)) {
     float maxRate;                          // Max rate in grams/min.
     uint8_t portionGrams;                   // Weight dispensed in one portion.
     uint8_t numPortions;                    // Number of active indices in portionTimes.
-    uint32_t portionTimes[NUM_PORTIONS];    // Time in minutes since 00:00 relative to UTC.
+    uint32_t portionTimes[NUM_PORTIONS];    // Time in minutes since 00:00 relative to CST.
 
     // Visual aid:
     // Time axis |----Feeding Period----|---Waiting Period---|   |--Next Feeding Period--|--so on...

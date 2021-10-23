@@ -18,11 +18,14 @@ void initWiFi() {
   }
 }
 
-// Contact SNTP server and sync system time.
+// Contact SNTP server and sync system time; set timezone to CST.
 void initSNTP() {
   sntp_setoperatingmode(SNTP_OPMODE_POLL);
   sntp_setservername(0, "pool.ntp.org");
   sntp_init();
+
+  setenv("TZ", "CST+6CDT,M3.2.0/2,M11.1.0/2", 1);
+  tzset();
 }
 
 // Create timers that can be used for interrupts for each profile.

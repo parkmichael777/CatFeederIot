@@ -21,13 +21,14 @@ void printProfileBuffer() {
   }
 }
 
-// Returns number of seconds passed since UTC 00:00.
-time_t getTimeUTC() {
+// Returns number of seconds passed since CST (UTC-6) 00:00 with DST adjustment.
+time_t getTime() {
   time_t sec;
   struct tm t;
 
   time(&sec);
   localtime_r(&sec, &t);
+
   return t.tm_hour * 3600 + t.tm_min * 60 + t.tm_sec;
 }
 
@@ -63,7 +64,7 @@ void updateState(catProfile *p) {
 
   p->timeEINTR = 0;
 
-  time_t currTime = getTimeUTC();
+  time_t currTime = getTime();
   
   if (currTime < p->portionTimes[0]) {
     // System initialized with currTime < all portionTimes.
