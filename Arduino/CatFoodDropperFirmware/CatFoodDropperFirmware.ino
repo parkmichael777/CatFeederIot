@@ -21,6 +21,8 @@ SemaphoreHandle_t updateLock = xSemaphoreCreateMutex();
 void ISR(void* arg) {
   volatile uint8_t *timeEINTR = (volatile uint8_t *)arg;
 
+  debugPrint("ISR Core", xPortGetCoreID());
+
   *timeEINTR = 1;
   debugPrint("ISR Fired", NULL);
 }
@@ -61,6 +63,12 @@ void setup() {
   initSNTP();
   initTimer();
   initCatProfiles();
+
+  // Launch client task (communicates with remote server.
+  esp_timer_handle_t clientTaskHandle;
+  launchClientTask(&clientTaskHandle);
+
+  // Device task launched through loop().
 }
 
 void loop() {
