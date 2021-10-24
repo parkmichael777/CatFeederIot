@@ -1,3 +1,9 @@
+// Reconnect to wifi. Automatically called by library upon disconnect event.
+void wifiReconnect(WiFiEvent_t event, WiFiEventInfo_t info) {
+  debugPrint("WiFi Connection Lost; Reconnecting...", NULL);
+  WiFi.reconnect();
+}
+
 // Connect to WiFi in station mode using (SSID, PWD)
 void initWiFi() {
   verbosePrint("MAC Address", WiFi.macAddress());
@@ -16,6 +22,9 @@ void initWiFi() {
     delay(250);
 #endif
   }
+
+  // Register handler to reconnect to WiFi if disconnected.
+  WiFi.onEvent(wifiReconnect, SYSTEM_EVENT_STA_DISCONNECTED);
 }
 
 // Contact SNTP server and sync system time; set timezone to CST.
