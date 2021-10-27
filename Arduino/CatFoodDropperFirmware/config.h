@@ -7,6 +7,7 @@
 #define NUM_PORTIONS  5               // Max num of schedulable portions.
 #define FEED_PERIOD   1 * (60000)     // Number of ms portion is available for after it starts.
 #define POLL_PERIOD   60 * (1000000)  // Number of us until bowl polls server for catProfile updates.
+#define DISP_PERIOD   60 * (1000000)  // Number of us each dispensing period within a portion lasts.
 
 /* WiFi and Server Config */
 #define SSID          "NETGEAR13"
@@ -15,16 +16,19 @@
 #define SERVER_PORT   8000
 
 /* Constants */
-#define DAY 86400000      // Number of milliseconds in a day.
+#define DAY           86400000        // Number of milliseconds in a day.
+#define RFID_DATA     10              // Number of data bytes in RFID packet
 
-#define RX_PIN        16  // ESP32 RX/TX
+/* Hardware Pins */
+#define RX_PIN        16              // ESP32 RX/TX
 #define TX_PIN        17
 
-#define RFID_DATA     10  // Number of data bytes in RFID packet
+#define LED           13
+#define NEARBY        21
 
 /* Debug Config */
-#define DEBUG_MODE    1        // Enable/Disable extra logging.
-#define VERBOSE_MODE  1        // Enable/Disable extra extra logging.
+#define DEBUG_MODE    1               // Enable/Disable extra logging.
+#define VERBOSE_MODE  1               // Enable/Disable extra extra logging.
 
 // Print macro; activated via DEBUG_MODE.
 #if DEBUG_MODE

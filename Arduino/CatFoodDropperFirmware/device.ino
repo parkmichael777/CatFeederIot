@@ -8,6 +8,7 @@ void uartHandler(void *pvParameters) {
     if(xQueueReceive(queue, (void *)&event, (portTickType)portMAX_DELAY)) {
       switch(event.type) { 
         case UART_DATA:
+        {
           uint64_t pendingCatID = 0;
         
           assert(event.size == 16);
@@ -35,9 +36,10 @@ void uartHandler(void *pvParameters) {
           debugPrint("CatID detected", pendingCatID);
 
           xSemaphoreTake(catIDLock, portMAX_DELAY);
-          newCatID = pendingCatID;
+          catID = pendingCatID;
           xSemaphoreGive(catIDLock);          
           break;
+        }
         case UART_FIFO_OVF:
           debugPrint("Received Event FIFO_OVF", NULL);
           break;
@@ -56,7 +58,7 @@ void uartHandler(void *pvParameters) {
         case UART_PATTERN_DET:
           debugPrint("Received Event PATTERN_DET", NULL);
           break;
-         default:
+        default:
           debugPrint("Received Event", event.type);
           break;
       }
@@ -73,4 +75,27 @@ void checkEINTR() {
     updateState(&profileBuffer[1]);
   else if (profileBuffer[2].timeEINTR)
     updateState(&profileBuffer[2]);
+}
+
+// Initialize all the microcontroller pins needed to communicate with the RFID, Load Cell, and Motor.
+void initHardwarePins() {
+  pinMode(NEARBY, INPUT);  // Pin recvs "Tag Nearby" Signal from RFID sensor
+}
+
+// Set periodFlag to indicate 1 min period elapsed.
+void dispISR(void* arg) {
+  uint8_t *dispFlag = (uint8_t *)arg;
+  *dispFlag = 1;
+}
+
+const esp_timer_create_args_t dispTimerArgs = {
+    (esp_timer_cb_t)&dispISR, 
+    (void*)&dispFlag, 
+    (esp_timer_dispatch_t)0, 
+    "Task: Retrieve cat profiles/Send new bowl data"
+};
+
+// Create timer used to mark 1 min periods during a portion.
+void initDispTimer() {
+  esp_timer_create(&dispTimerArgs, &dispTimerHandle);
 }
