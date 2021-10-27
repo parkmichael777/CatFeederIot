@@ -92,7 +92,7 @@ const esp_timer_create_args_t dispTimerArgs = {
     (esp_timer_cb_t)&dispISR, 
     (void*)&dispFlag, 
     (esp_timer_dispatch_t)0, 
-    "Task: Retrieve cat profiles/Send new bowl data"
+    "ISR: Set dispFlag"
 };
 
 // Create timer used to mark 1 min periods during a portion.

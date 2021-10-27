@@ -41,19 +41,19 @@ const esp_timer_create_args_t intrArgs[] = {
     (esp_timer_cb_t)&ISR, 
     (void*)&profileBuffer[0].timeEINTR, 
     (esp_timer_dispatch_t)0, 
-    "Profile 1 ISR"
+    "ISR: Profile 1 EINTR"
   },
   {
     (esp_timer_cb_t)&ISR, 
     (void*)&profileBuffer[1].timeEINTR, 
     (esp_timer_dispatch_t)0, 
-    "Profile 2 ISR"
+    "ISR: Profile 2 EINTR"
   },
   {
     (esp_timer_cb_t)&ISR, 
     (void*)&profileBuffer[2].timeEINTR, 
     (esp_timer_dispatch_t)0, 
-    "Profile 3 ISR"
+    "ISR: Profile 3 EINTR"
   }
 };
 
