@@ -3,12 +3,20 @@
 #include <time.h>
 #include <esp_sntp.h>
 #include <esp_timer.h>
+#include <driver/uart.h>
 
 #include "config.h"
 #include "CatProfile.h"
 
 /* Globals */
+#if DEBUG_MODE || VERBOSE_MODE
 int LED = 13;
+#endif
+
+int catNearby = 21;                             // Pin recving tag nearby signal.
+uint64_t catID = 0;                             // RFID tag ID of last cat to use/using bowl.
+volatile uint64_t newCatID = 0;                 // RFID tag ID of newly arrived cat.
+SemaphoreHandle_t catIDLock = xSemaphoreCreateMutex();
 
 uint32_t catProfileVersion = 0;                 // Server versioning ID for profileBuffer.
 catProfile profileBuffer[NUM_CATS] = {0};       // Working copy of cat profiles.
@@ -16,6 +24,8 @@ catProfile profileBuffer[NUM_CATS] = {0};       // Working copy of cat profiles.
 volatile int updateFlag = 0;                    // Indicates whether catProfile update is available.
 catProfileServer updateBuffer[NUM_CATS] = {0};  // Stores pending updates to cat profiles.
 SemaphoreHandle_t updateLock = xSemaphoreCreateMutex();
+
+QueueHandle_t queue;                            // Queues UART events.
 
 // Sets timeEINTR flag for given profile when timer expires.
 void ISR(void* arg) {
@@ -63,8 +73,10 @@ void setup() {
   initSNTP();
   initTimer();
   initCatProfiles();
+  initUARTDriver();
+  pinMode(catNearby, INPUT);  // Pin recvs "Tag Nearby" Signal from RFID sensor
 
-  // Launch client task (communicates with remote server.
+  // Launch client task (communicates with remote server).
   esp_timer_handle_t clientTaskHandle;
   launchClientTask(&clientTaskHandle);
 
@@ -72,11 +84,5 @@ void setup() {
 }
 
 void loop() {
-  // Test interrupt scheduling
-  if (profileBuffer[0].timeEINTR)
-    updateState(&profileBuffer[0]);
-  else if (profileBuffer[1].timeEINTR)
-    updateState(&profileBuffer[1]);
-  else if (profileBuffer[2].timeEINTR)
-    updateState(&profileBuffer[2]);
+
 }

@@ -15,7 +15,12 @@
 #define SERVER_PORT   8000
 
 /* Constants */
-#define DAY 86400000     // Number of milliseconds in a day.
+#define DAY 86400000      // Number of milliseconds in a day.
+
+#define RX_PIN        16  // ESP32 RX/TX
+#define TX_PIN        17
+
+#define RFID_DATA     10  // Number of data bytes in RFID packet
 
 /* Debug Config */
 #define DEBUG_MODE    1        // Enable/Disable extra logging.

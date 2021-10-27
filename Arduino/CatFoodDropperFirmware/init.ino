@@ -57,3 +57,32 @@ void initCatProfiles() {
 
   updateCatProfiles();
 }
+
+// Initialize UART driver and install.
+// https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/peripherals/uart.html
+void initUARTDriver() {
+  // Set driver config
+  uart_config_t uartConfig = {
+    .baud_rate = 9600,
+    .data_bits = UART_DATA_8_BITS,
+    .parity = UART_PARITY_DISABLE,
+    .stop_bits = UART_STOP_BITS_1,
+    .flow_ctrl = UART_HW_FLOWCTRL_DISABLE
+  };
+
+  // Apply config
+  ESP_ERROR_CHECK(uart_param_config(UART_NUM_2, &uartConfig));
+
+  // Set COMM pins
+  ESP_ERROR_CHECK(uart_set_pin(UART_NUM_2,
+                               TX_PIN,
+                               RX_PIN, 
+                               UART_PIN_NO_CHANGE,
+                               UART_PIN_NO_CHANGE));
+
+  // Install driver
+  uart_driver_install(UART_NUM_2, UART_FIFO_LEN * 2, 0, 20, &queue, 0); 
+
+  // Launch handler task
+  xTaskCreate(uartHandler, "UART Handler", 2048, NULL, 12, NULL);
+}
