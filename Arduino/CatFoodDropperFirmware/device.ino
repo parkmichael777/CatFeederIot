@@ -77,25 +77,19 @@ void checkEINTR() {
     updateState(&profileBuffer[2]);
 }
 
-// Initialize all the microcontroller pins needed to communicate with the RFID, Load Cell, and Motor.
-void initHardwarePins() {
-  pinMode(NEARBY, INPUT);  // Pin recvs "Tag Nearby" Signal from RFID sensor
-}
+// Accesses catID and traces it back to a profileBuffer.
+int nearbyCat() {
+  uint64_t id = 0;
 
-// Set periodFlag to indicate 1 min period elapsed.
-void dispISR(void* arg) {
-  uint8_t *dispFlag = (uint8_t *)arg;
-  *dispFlag = 1;
-}
+  xSemaphoreTake(catIDLock, portMAX_DELAY);
+  id = catID;
+  xSemaphoreGive(catIDLock);
+  
+  // Scan profileBuffer and retrieve corresponding profile.
+  for (int i = 0; i < NUM_CATS; ++i) {
+    if (id == profileBuffer[i].catID)
+      return i;
+  }
 
-const esp_timer_create_args_t dispTimerArgs = {
-    (esp_timer_cb_t)&dispISR, 
-    (void*)&dispFlag, 
-    (esp_timer_dispatch_t)0, 
-    "ISR: Set dispFlag"
-};
-
-// Create timer used to mark 1 min periods during a portion.
-void initDispTimer() {
-  esp_timer_create(&dispTimerArgs, &dispTimerHandle);
+  return -1;
 }

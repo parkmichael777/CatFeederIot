@@ -86,3 +86,13 @@ void initUARTDriver() {
   // Launch handler task
   xTaskCreate(uartHandler, "UART Handler", 2048, NULL, 12, NULL);
 }
+
+// Initialize all the microcontroller pins needed to communicate with the RFID, Load Cell, and Motor.
+void initHardwarePins() {
+  pinMode(NEARBY, INPUT);  // Pin recvs "Tag Nearby" Signal from RFID sensor
+}
+
+// Create timer used to mark 1 min periods during a portion.
+void initDispTimer() {
+  esp_timer_create(&dispTimerArgs, &dispTimerHandle);
+}

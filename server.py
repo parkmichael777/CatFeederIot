@@ -26,10 +26,10 @@ if __name__ == "__main__":
     
     # Create test files
     f = open("CatProfiles", "wb")
-    p = pack('!BfBBLLLLLBfBBLLLLLBfBBLLLLL',
-        1, 1.75, 1, 3, time(hour, min, 1), time(hour, min + 2, 1), time(hour, min + 4, 1), 1, 1,
-        0, 2.75, 1, 3, time(hour, min, 1), time(hour, min + 2, 1), time(hour, min + 4, 1), 0, 0,
-        0, 3.75, 1, 3, time(h3, m3, 1), time(h3, m3 + 2, 1), time(h3, m3 + 4, 1), 0, 0)
+    p = pack('!BfBBLLLLLQBfBBLLLLLQBfBBLLLLLQ',
+        1, 1.75, 1, 3, time(hour, min, 1), time(hour, min + 2, 1), time(hour, min + 4, 1), 1, 1, 0,# TODO: Add catIDs.
+        0, 2.75, 1, 3, time(hour, min, 1), time(hour, min + 2, 1), time(hour, min + 4, 1), 0, 0, 0,
+        0, 3.75, 1, 3, time(h3, m3, 1), time(h3, m3 + 2, 1), time(h3, m3 + 4, 1), 0, 0, 0)
     
     f.write(p)
     

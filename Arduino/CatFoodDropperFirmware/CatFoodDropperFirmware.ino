@@ -57,6 +57,19 @@ const esp_timer_create_args_t intrArgs[] = {
   }
 };
 
+// Set dispFlag to indicate 1 min period elapsed.
+void dispISR(void* arg) {
+  uint8_t *dispFlag = (uint8_t *)arg;
+  *dispFlag = 1;
+}
+
+const esp_timer_create_args_t dispTimerArgs = {
+    (esp_timer_cb_t)&dispISR, 
+    (void*)&dispFlag, 
+    (esp_timer_dispatch_t)0, 
+    "ISR: Set dispFlag"
+};
+
 void setup() {
 #if DEBUG_MODE || VERBOSE_MODE
   // Enable serial monitor
@@ -95,9 +108,14 @@ start:
   if (digitalRead(NEARBY) == LOW)
     goto start;
 
-  // TODO: Get lock, copy catID, and decode to corresponding profileBuffer.
+  // Retrieve index into profileBuffer of cat at bowl.
+  int catIndex = nearbyCat();
+  if (catIndex == -1) {
+    debugPrint("No valid catIDs nearby", NULL);
+    goto start;
+  }
 
-//  catProfile *p = &profileBuffer[catIDtoProfile(catID)];
+  catProfile *p = &profileBuffer[catIndex];
 
   // Check whether cat is allowed to eat
   if ((p->canEat == 0) || (p->isComplete == 1))

@@ -37,11 +37,16 @@ int handle200OK(HttpClient & client) {
   for (int i = 0; i < NUM_CATS; ++i) {
     if (updateBuffer[i].inUse == 0)
       continue;
-    
-    NetworkToHostL((uint8_t*)(&updateBuffer[i].maxRate));
-  
+
+    // Fix maxRate (4 bytes)
+    NTOHL((uint8_t*)(&updateBuffer[i].maxRate));
+
+    // Fix portionTimes (4 bytes each)
     for (int j = 0; j < updateBuffer[i].numPortions; ++j)
-      NetworkToHostL((uint8_t*)(&updateBuffer[i].portionTimes[j]));
+      NTOHL((uint8_t*)(&updateBuffer[i].portionTimes[j]));
+
+    // Fix catID (8 bytes)
+    NTOHLL((uint8_t*)(&updateBuffer[i].catID));
   }
   
   // Raise update flag

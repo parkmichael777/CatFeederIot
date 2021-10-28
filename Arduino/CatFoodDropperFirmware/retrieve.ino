@@ -17,7 +17,7 @@ void printUpdateBuffer() {
 }
 
 // ntohl/htonl function that works with floats
-void NetworkToHostL(uint8_t *bytes) {
+void NTOHL(uint8_t *bytes) {
   uint8_t b0, b1, b2, b3;
 
   b0 = bytes[0];
@@ -29,6 +29,29 @@ void NetworkToHostL(uint8_t *bytes) {
   bytes[1] = b2;
   bytes[2] = b1;
   bytes[3] = b0;
+}
+
+// ntohll/htonll function that works with unsigned long long (8 bytes)
+void NTOHLL(uint8_t *bytes) {
+  uint8_t b0, b1, b2, b3, b4, b5, b6, b7;
+
+  b0 = bytes[0];
+  b1 = bytes[1];
+  b2 = bytes[2];
+  b3 = bytes[3];
+  b4 = bytes[4];
+  b5 = bytes[5];
+  b6 = bytes[6];
+  b7 = bytes[7];
+
+  bytes[0] = b7;
+  bytes[1] = b6;
+  bytes[2] = b5;
+  bytes[3] = b4;
+  bytes[4] = b3;
+  bytes[5] = b2;
+  bytes[6] = b1;
+  bytes[7] = b0;
 }
 
 // Contacts server and sends get request for CatProfiles.
