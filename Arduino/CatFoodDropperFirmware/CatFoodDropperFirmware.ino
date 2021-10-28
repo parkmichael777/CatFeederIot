@@ -135,7 +135,17 @@ start:
     p->inProgress = 1;
   }
 
-  // TODO: Update state when portion has been fully dispensed.
+  // Update state when portion has been fully dispensed.
+  xSemaphoreTake(p->dataLock, portMAX_DELAY);
+  if (p->data->amountDispensed >= p->portionGrams) {
+    p->isComplete = 1;
+    p->inProgress = 0;
+    p->sendData = 1;
+
+    xSemaphoreGive(p->dataLock);
+    goto start;
+  }
+  xSemaphoreGive(p->dataLock);
 
   // Arm dispense timer.
   esp_timer_start_once(dispTimerHandle, POLL_PERIOD);
