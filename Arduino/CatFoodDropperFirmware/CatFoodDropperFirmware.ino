@@ -108,7 +108,7 @@ start:
   if (digitalRead(NEARBY) == LOW)
     goto start;
 
-  // Retrieve index into profileBuffer of cat at bowl.
+  // Retrieve profileBuffer index of cat at bowl.
   int catIndex = nearbyCat();
   if (catIndex == -1) {
     debugPrint("No valid catIDs nearby", NULL);
@@ -125,6 +125,8 @@ start:
   if (p->inProgress == 0) {
     // TODO: Set tare weight.
 
+    // TODO: Set scale to standby mode.
+
     // Clear data collected from last portion
     xSemaphoreTake(p->dataLock, portMAX_DELAY);
     memset(&p->data, 0, sizeof(bowlData));
@@ -133,16 +135,19 @@ start:
     p->inProgress = 1;
   }
 
-  // TODO: Check if amount dispensed exceeds max per portion
-  // if yes, set isComplete, inProgress, and sendData.
+  // TODO: Update state when portion has been fully dispensed.
 
   // Arm dispense timer.
   esp_timer_start_once(dispTimerHandle, POLL_PERIOD);
+
+  // TODO: Wake scale at desired SPS.
 
   // TODO: Read initial weight (current weight - tare weight).
 
   // TODO: Drive motor until weight reaches max per period or max per portion.
   // TODO: If max per portion is met, set isComplete, inProgress, and sendData.
+
+  // TODO: Set scale to standby mode.
 
   // TODO: Atomically increment bowlData.
 
