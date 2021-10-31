@@ -41,7 +41,8 @@ void updateToFeeding(catProfile *p, time_t currTime, time_t prevTime) {
   verbosePrint("Registered end time in", prevTime + FEED_PERIOD - currTime);
 
   assert(prevTime + FEED_PERIOD > currTime);
-  esp_timer_start_once(p->timerHandle, (prevTime + FEED_PERIOD - currTime) * 1000);
+  uint64_t diff = (uint64_t)(prevTime + FEED_PERIOD - currTime) * 1000;
+  esp_timer_start_once(p->timerHandle, diff);
 }
 
 // Upodate state to be in waiting period + register start time intr.
@@ -59,7 +60,8 @@ void updateToWaiting(catProfile *p, time_t currTime, time_t nextTime) {
   verbosePrint("Registered start time in", nextTime - currTime);
   
   assert(nextTime > currTime);
-  esp_timer_start_once(p->timerHandle, (nextTime - currTime) * 1000);
+  uint64_t diff = (uint64_t)(nextTime - currTime) * 1000;
+  esp_timer_start_once(p->timerHandle, diff);
 }
 
 // Register next timer interrupt for passed in profile.
@@ -71,7 +73,7 @@ void updateState(catProfile *p) {
   time_t currTime = getTime();
   
   if (currTime < p->portionTimes[0]) {
-    debugPrint("Type 1", NULL);
+    debugPrint("Type 1 Waiting", NULL);
     
     // System initialized with currTime < all portionTimes.
     time_t nextTime = p->portionTimes[0];
@@ -86,11 +88,11 @@ void updateState(catProfile *p) {
 
     // Initialize state and register based on which period we are in.
     if (currTime < prevTime + FEED_PERIOD) {
-      debugPrint("Type 2.1", NULL);
+      debugPrint("Type 2 Feeding", NULL);
       updateToFeeding(p, currTime, prevTime);
     }
     else {
-      debugPrint("Type 2.2", NULL);
+      debugPrint("Type 2 Waiting", NULL);
       updateToWaiting(p, currTime, nextTime);
     } 
   }
@@ -110,11 +112,11 @@ void updateState(catProfile *p) {
 
     // Initialize state and register based on which period we are in.
     if (currTime < prevTime + FEED_PERIOD) {
-      debugPrint("Type 3.1", NULL);
+      debugPrint("Type 3 Feeding", NULL);
       updateToFeeding(p, currTime, prevTime);
     }
     else {
-      debugPrint("Type 3.2", NULL);
+      debugPrint("Type 3 Waiting", NULL);
       updateToWaiting(p, currTime, nextTime);
     }
   }
