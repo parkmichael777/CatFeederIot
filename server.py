@@ -14,12 +14,13 @@ def time(hour, min, pm):
     return t
 
 if __name__ == "__main__":
-    server = ThreadedHTTPServer(("192.168.1.3", 8000), HTTPRequestHandler)
+    server = ThreadedHTTPServer(("10.195.29.164", 8000), HTTPRequestHandler)
     
     print("Starting server at", server.server_address[0] + ":" + str(server.server_address[1]))
     
-    hour = 2
-    min = 20
+    hour = 6
+    min = 14
+    pm = 1
     
     h3 = 6
     m3 = 2
@@ -27,9 +28,9 @@ if __name__ == "__main__":
     # Create test files
     f = open("CatProfiles", "wb")
     p = pack('!BfBBLLLLLQBfBBLLLLLQBfBBLLLLLQ',
-        1, 1.75, 1, 3, time(hour, min, 1), time(hour, min + 2, 1), time(hour, min + 4, 1), 1, 1, 0,# TODO: Add catIDs.
-        0, 2.75, 1, 3, time(hour, min, 1), time(hour, min + 2, 1), time(hour, min + 4, 1), 0, 0, 0,
-        0, 3.75, 1, 3, time(h3, m3, 1), time(h3, m3 + 2, 1), time(h3, m3 + 4, 1), 0, 0, 0)
+        1, 1.75, 1, 3, time(hour, min, pm), time(hour, min + 2, pm), time(hour, min + 4, pm), 1, 1, 0,# TODO: Add catIDs.
+        0, 2.75, 1, 3, time(hour, min, pm), time(hour, min + 2, pm), time(hour, min + 4, pm), 0, 0, 0,
+        0, 3.75, 1, 3, time(h3, m3, pm), time(h3, m3 + 2, pm), time(h3, m3 + 4, pm), 0, 0, 0)
     
     f.write(p)
     
