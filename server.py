@@ -14,7 +14,8 @@ def time(hour, min, pm):
     return t
 
 if __name__ == "__main__":
-    server = ThreadedHTTPServer(("10.195.29.164", 8000), HTTPRequestHandler)
+    ip = "10.195.29.164"    #"192.168.1.3"
+    server = ThreadedHTTPServer((ip, 8000), HTTPRequestHandler)
     
     print("Starting server at", server.server_address[0] + ":" + str(server.server_address[1]))
     

@@ -10,10 +10,18 @@
 #define DISP_PERIOD   60 * (1000000)  // Number of us each dispensing period within a portion lasts.
 
 /* WiFi and Server Config */
+#define EDU_WIFI      1               // Whether we are connecting to IllinoisNet or not.
+
+#if EDU_WIFI
+#define SSID          "IllinoisNet_Guest"
+#define SERVER_IP     "10.195.29.164"
+#define SERVER_PORT   8000
+#else
 #define SSID          "NETGEAR13"
 #define PWD           "largewater374"
 #define SERVER_IP     "192.168.1.3"
 #define SERVER_PORT   8000
+#endif
 
 /* Constants */
 #define DAY           86400000        // Number of milliseconds in a day.

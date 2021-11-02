@@ -6,12 +6,17 @@ void wifiReconnect(WiFiEvent_t event, WiFiEventInfo_t info) {
 
 // Connect to WiFi in station mode using (SSID, PWD)
 void initWiFi() {
-  verbosePrint("MAC Address", WiFi.macAddress());
+//  verbosePrint("MAC Address", WiFi.macAddress());
 //  verbosePrint("Number of networks found", WiFi.scanNetworks());
 
   // Connect to WiFi
   WiFi.mode(WIFI_STA);
+#if EDU_WIFI
+  WiFi.begin(SSID);
+#else
   WiFi.begin(SSID, PWD);
+#endif
+  
 
   while (WiFi.status() != WL_CONNECTED) {
 #if DEBUG_MODE || VERBOSE_MODE

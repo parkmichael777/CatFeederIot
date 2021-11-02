@@ -30,8 +30,6 @@ QueueHandle_t queue;                            // Queues UART events.
 void ISR(void* arg) {
   volatile uint8_t *timeEINTR = (volatile uint8_t *)arg;
 
-  debugPrint("ISR Core", xPortGetCoreID());
-
   *timeEINTR = 1;
   debugPrint("ISR Fired", NULL);
 }
@@ -137,12 +135,13 @@ start:
 
   // Update state when portion has been fully dispensed.
   xSemaphoreTake(p->dataLock, portMAX_DELAY);
-  if (p->data->amountDispensed >= p->portionGrams) {
+  if (p->data.amountDispensed >= p->portionGrams) {
+    p->dataFlag = 1;
+    xSemaphoreGive(p->dataLock);
+
     p->isComplete = 1;
     p->inProgress = 0;
-    p->sendData = 1;
 
-    xSemaphoreGive(p->dataLock);
     goto start;
   }
   xSemaphoreGive(p->dataLock);
