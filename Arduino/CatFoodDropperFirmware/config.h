@@ -10,7 +10,7 @@
 #define DISP_PERIOD   60 * (1000000)  // Number of us each dispensing period within a portion lasts.
 
 /* WiFi and Server Config */
-#define EDU_WIFI      1               // Whether we are connecting to IllinoisNet or not.
+#define EDU_WIFI      0               // Whether we are connecting to IllinoisNet or not.
 
 #if EDU_WIFI
 #define SSID          "IllinoisNet_Guest"
@@ -28,15 +28,25 @@
 #define RFID_DATA     10              // Number of data bytes in RFID packet
 
 /* Hardware Pins */
-#define RX_PIN        16              // ESP32 RX/TX
+#define RX_PIN        16              // UART RX/TX
 #define TX_PIN        17
 
-#define LED           13
-#define NEARBY        21
+#define LED           13              // Debug LED
+
+#define RFID_NEARBY   21              // RFID
+
+#define CELL_DOUT     23              // Load cell
+#define CELL_SCLK     22 
+#define CELL_PWDN     14
+#define CELL_SPEED    32
+#define CELL_CALIB    -7050.0         // Default provided by Sparkfun; TODO: tune to 1g.
 
 /* Debug Config */
 #define DEBUG_MODE    1               // Enable/Disable extra logging.
 #define VERBOSE_MODE  1               // Enable/Disable extra extra logging.
+
+/* Types */
+typedef uint64_t TIME_T;
 
 // Print macro; activated via DEBUG_MODE.
 #if DEBUG_MODE
