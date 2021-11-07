@@ -30,3 +30,11 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
         f.close()
         
         self.wfile.write(profs)
+        
+    def do_POST(self):
+        cat_idx, amt_disp, timestamp = unpack("!ifQ", self.rfile.read())
+        print(cat_idx, amt_disp, timestamp)
+    
+        self.send_response(200, "OK")
+        self.end_headers()
+        self.flush_headers()
