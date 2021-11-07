@@ -1,9 +1,10 @@
 #include <WiFi.h>
-#include <ArduinoHttpClient.h>
 #include <time.h>
 #include <esp_sntp.h>
 #include <esp_timer.h>
 #include <driver/uart.h>
+#include <ArduinoHttpClient.h>
+#include <HX711.h>
 
 #include "config.h"
 #include "CatProfile.h"
@@ -24,7 +25,10 @@ volatile uint8_t updateFlag = 0;                // Indicates whether catProfile 
 catProfileServer updateBuffer[NUM_CATS] = {0};  // Stores pending updates to cat profiles.
 SemaphoreHandle_t updateLock = xSemaphoreCreateMutex();
 
-QueueHandle_t queue;                            // Queues UART events.
+QueueHandle_t uartQueue;                            // Queues UART events.
+QueueHandle_t sendQueue;                            // Queues data packets to be sent to server.
+
+HX711 scale;
 
 // Sets timeEINTR flag for given profile when timer expires.
 void ISR(void* arg) {
@@ -57,13 +61,12 @@ const esp_timer_create_args_t intrArgs[] = {
 
 // Set dispFlag to indicate 1 min period elapsed.
 void dispISR(void* arg) {
-  uint8_t *dispFlag = (uint8_t *)arg;
-  *dispFlag = 1;
+  dispFlag = 1;
 }
 
 const esp_timer_create_args_t dispTimerArgs = {
     (esp_timer_cb_t)&dispISR, 
-    (void*)&dispFlag, 
+    (void*)NULL, 
     (esp_timer_dispatch_t)0, 
     "ISR: Set dispFlag"
 };
@@ -89,6 +92,8 @@ void setup() {
   initHardwarePins();
   initDispTimer();
 
+  sendQueue = xQueueCreate(1024, sizeof(dataPacket));
+
   // Launch client task (communicates with remote server)
   initClientTask();
 
@@ -103,7 +108,7 @@ start:
 
   // TODO: Add delay inside 'NEARBY?' if-statement to prevent wasted cycles?
 
-  if (digitalRead(NEARBY) == LOW)
+  if (digitalRead(RFID_NEARBY) == LOW)
     goto start;
 
   // Retrieve profileBuffer index of cat at bowl.
@@ -121,44 +126,50 @@ start:
 
   // Initialize portion if this is the first time activating
   if (p->inProgress == 0) {
-    // TODO: Set tare weight.
+    // Tare weight
+    scale.tare();
 
-    // TODO: Set scale to standby mode.
-
-    // Clear data collected from last portion
-    xSemaphoreTake(p->dataLock, portMAX_DELAY);
-    memset(&p->data, 0, sizeof(bowlData));
-    xSemaphoreGive(p->dataLock);
-
+    p->amountDispensed = 0;
     p->inProgress = 1;
+    p->isComplete = 0;
   }
 
   // Update state when portion has been fully dispensed.
-  xSemaphoreTake(p->dataLock, portMAX_DELAY);
-  if (p->data.amountDispensed >= p->portionGrams) {
-    p->dataFlag = 1;
-    xSemaphoreGive(p->dataLock);
-
-    p->isComplete = 1;
+  if (p->amountDispensed >= p->portionGrams) {
+    p->amountDispensed = 0;
     p->inProgress = 0;
+    p->isComplete = 1;
 
     goto start;
   }
-  xSemaphoreGive(p->dataLock);
 
   // Arm dispense timer.
   esp_timer_start_once(dispTimerHandle, POLL_PERIOD);
 
-  // TODO: Wake scale at desired SPS.
-
-  // TODO: Read initial weight (current weight - tare weight).
-
   // TODO: Drive motor until weight reaches max per period or max per portion.
-  // TODO: If max per portion is met, set isComplete, inProgress, and sendData.
+  float initial_weight = scale.get_units();
+  float curr_weight = initial_weight;
+  while (curr_weight < p->maxRate) {
+    // Break if overall portion limit is reached
+    if ((p->amountDispensed + curr_weight) < p->portionGrams)
+      break;
 
-  // TODO: Set scale to standby mode.
+    // TODO: Dispense one divot.
 
-  // TODO: Atomically increment bowlData.
+    curr_weight = scale.get_units();
+  }
 
-  // TODO: Wait until disp timer elapses; set dispFlag to 0.
+  // TODO: Drive motor to cover hole if needed
+
+  // TODO: increment amountDispensed
+  p->amountDispensed += curr_weight - initial_weight;
+
+  // TODO: send data
+  dataPacket newData = {catIndex, curr_weight - initial_weight, (TIME_T)time(NULL)};
+  xQueueSend(sendQueue, &newData, 0);
+
+  // Wait until disp timer elapses before dispensing next portion
+  while (dispFlag);
+
+  dispFlag = 0;
 }

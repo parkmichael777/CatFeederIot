@@ -51,10 +51,6 @@ void initTimer() {
 
 // Retrieve cat profile from server and update device copy.
 void initCatProfiles() {
-  // Initialize data semaphores.
-  for (int i = 0; i < NUM_CATS; ++i)
-    profileBuffer[i].dataLock = xSemaphoreCreateMutex();
-
   // Ret val of -1 means the server failed to respond correctly or on time. 
   // Block until good resp received.
   while (retrieveCatProfiles() == -1)
@@ -86,7 +82,7 @@ void initUARTDriver() {
                                UART_PIN_NO_CHANGE));
 
   // Install driver
-  uart_driver_install(UART_NUM_2, UART_FIFO_LEN * 2, 0, 20, &queue, 0); 
+  uart_driver_install(UART_NUM_2, UART_FIFO_LEN * 2, 0, 20, &uartQueue, 0); 
 
   // Launch handler task
   xTaskCreate(uartHandler, "UART Handler", 2048, NULL, 12, NULL);
@@ -94,7 +90,17 @@ void initUARTDriver() {
 
 // Initialize all the microcontroller pins needed to communicate with the RFID, Load Cell, and Motor.
 void initHardwarePins() {
-  pinMode(NEARBY, INPUT);  // Pin recvs "Tag Nearby" Signal from RFID sensor
+  pinMode(RFID_NEARBY, INPUT);    // "Tag Nearby" of RFID sensor
+  pinMode(CELL_DOUT, INPUT);
+  pinMode(CELL_SCLK, OUTPUT);
+  pinMode(CELL_PWDN, OUTPUT);
+  pinMode(CELL_SPEED, OUTPUT);
+
+  // Example code from: https://github.com/sparkfun/HX711-Load-Cell-Amplifier/tree/V_1.1/firmware
+  scale.begin(CELL_DOUT, CELL_SCLK);
+  scale.set_scale(CELL_CALIB);
+  digitalWrite(CELL_PWDN, HIGH);  // Keep high so as not to start powerdown mode
+  digitalWrite(CELL_SPEED, LOW);  // Keep low for 10 SPS.
 }
 
 // Create timer used to mark 1 min periods during a portion.

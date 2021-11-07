@@ -5,7 +5,7 @@ void uartHandler(void *pvParameters) {
   uint8_t buf[16] = {0};
 
   for(;;) {
-    if(xQueueReceive(queue, (void *)&event, (portTickType)portMAX_DELAY)) {
+    if(xQueueReceive(uartQueue, (void *)&event, (portTickType)portMAX_DELAY)) {
       switch(event.type) { 
         case UART_DATA:
         {
@@ -86,7 +86,7 @@ int nearbyCat() {
   xSemaphoreGive(catIDLock);
   
   // Scan profileBuffer and retrieve corresponding profile.
-  for (int i = 0; i < NUM_CATS; ++i) {
+  for (uint32_t i = 0; i < NUM_CATS; ++i) {
     if (id == profileBuffer[i].catID)
       return i;
   }
