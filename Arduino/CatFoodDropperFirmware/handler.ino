@@ -41,9 +41,12 @@ int handle200OK(HttpClient & client) {
     // Fix maxRate (4 bytes)
     NTOHL((uint8_t*)(&updateBuffer[i].maxRate));
 
-    // Fix portionTimes (4 bytes each)
+    // Fix portionGrams (4 bytes)
+    NTOHL((uint8_t*)(&updateBuffer[i].portionGrams));
+
+    // Fix portionTimes (8 bytes each)
     for (int j = 0; j < updateBuffer[i].numPortions; ++j)
-      NTOHL((uint8_t*)(&updateBuffer[i].portionTimes[j]));
+      NTOHLL((uint8_t*)(&updateBuffer[i].portionTimes[j]));
 
     // Fix catID (8 bytes)
     NTOHLL((uint8_t*)(&updateBuffer[i].catID));
