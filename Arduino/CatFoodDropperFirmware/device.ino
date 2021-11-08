@@ -10,8 +10,8 @@ void uartHandler(void *pvParameters) {
         case UART_DATA:
         {
           uint64_t pendingCatID = 0;
-        
-          assert(event.size == 16);
+
+          assert(event.size <= 16);
 
           uart_read_bytes(UART_NUM_2, buf, event.size, portMAX_DELAY);
 
@@ -23,13 +23,15 @@ void uartHandler(void *pvParameters) {
 
             // Convert ASCII to hex:
             if (curr > '0' || curr < '9')
-              curr -= 48;
+              curr -= '0';
             else if (curr > 'A' || curr < 'F')
-              curr -= 55;
-            else
+              curr -= 'A';
+            else {
               debugPrint("Error: invalid ASCII sent via UART", NULL);
-            
-            pendingCatID << 4;
+              assert(false);
+            }
+
+            pendingCatID <<= 4;
             pendingCatID |= curr;
           }
 
