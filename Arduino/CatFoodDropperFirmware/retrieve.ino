@@ -12,6 +12,8 @@ void printUpdateBuffer() {
     for (int j = 0; j < updateBuffer[i].numPortions; ++j)
       verbosePrint("P" + String(j), updateBuffer[i].portionTimes[j]);
 
+    verbosePrint("Cat ID", updateBuffer[i].catID);
+
     verbosePrint(NULL, NULL);
   }
 }

@@ -14,7 +14,7 @@ def time(hour, min, pm):
     return t
 
 if __name__ == "__main__":
-    EDU_WIFI = 0
+    EDU_WIFI = 1
     
     if EDU_WIFI:
         ip = "10.195.29.164"
@@ -24,6 +24,10 @@ if __name__ == "__main__":
     server = ThreadedHTTPServer((ip, 8000), HTTPRequestHandler)
     
     print("Starting server at", server.server_address[0] + ":" + str(server.server_address[1]))
+    
+    cat_id_1 = 14155138199436
+    cat_id_2 = 14155138203326
+    cat_id_3 = 14155138203640
     
     hour = 2
     min = 50
@@ -36,9 +40,9 @@ if __name__ == "__main__":
     f = open("CatProfiles", "wb")
     pack_format = "BffBQQQQQQ"
     p = pack("!" + pack_format + pack_format + pack_format,
-        1, 1.75, 1.0, 1, time(hour, min, pm), time(hour, min + 2, pm), time(hour, min + 4, pm), 1, 1, 0,# TODO: Add catIDs.
-        0, 2.75, 1.0, 3, time(hour, min, pm), time(hour, min + 2, pm), time(hour, min + 4, pm), 0, 0, 0,
-        0, 3.75, 1.0, 3, time(h3, m3, pm), time(h3, m3 + 2, pm), time(h3, m3 + 4, pm), 0, 0, 0)
+        1, 1.75, 1.0, 1, time(hour, min, pm), time(hour, min + 2, pm), time(hour, min + 4, pm), 1, 1, cat_id_1,
+        0, 2.75, 1.0, 3, time(hour, min, pm), time(hour, min + 2, pm), time(hour, min + 4, pm), 0, 0, cat_id_2,
+        0, 3.75, 1.0, 3, time(h3, m3, pm), time(h3, m3 + 2, pm), time(h3, m3 + 4, pm), 0, 0, cat_id_3)
     
     f.write(p)
     

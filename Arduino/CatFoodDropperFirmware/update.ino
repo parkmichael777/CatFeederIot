@@ -16,6 +16,8 @@ void printProfileBuffer() {
     verbosePrint("Is Comp", profileBuffer[i].isComplete);
     verbosePrint("Amt Disp", profileBuffer[i].amountDispensed);
 
+    verbosePrint("Cat ID", profileBuffer[i].catID);
+
     verbosePrint(NULL, NULL);
   }
 }
