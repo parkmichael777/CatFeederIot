@@ -1,4 +1,4 @@
-void printProfileBuffer() {
+ void printProfileBuffer() {
   for (int i = 0; i < NUM_CATS; ++i) {
     if (profileBuffer[i].inUse == 0)
       continue;
@@ -14,7 +14,7 @@ void printProfileBuffer() {
     verbosePrint("Can Eat", profileBuffer[i].canEat);
     verbosePrint("In Prog", profileBuffer[i].inProgress);
     verbosePrint("Is Comp", profileBuffer[i].isComplete);
-    verbosePrint("Amt Disp", profileBuffer[i].amountDispensed);
+    verbosePrint("Amt Eaten", profileBuffer[i].amountEaten);
 
     verbosePrint("Cat ID", profileBuffer[i].catID);
 
@@ -22,7 +22,7 @@ void printProfileBuffer() {
   }
 }
 
-// Returns number of seconds passed since CST (UTC-6) 00:00 with DST adjustment.
+// Returns number of milliseconds passed since CST (UTC-6) 00:00 with DST adjustment.
 TIME_T getTime() {
   struct timeval tv;
   struct tm t;
@@ -51,7 +51,7 @@ void updateToWaiting(catProfile *p, TIME_T currTime, TIME_T nextTime) {
   p->canEat = 0;
   p->inProgress = 0;
   p->isComplete = 0;
-  p->amountDispensed = 0;
+  p->amountEaten = 0;
 
   verbosePrint("NextTime", nextTime);
   verbosePrint("CurrTime", currTime);
