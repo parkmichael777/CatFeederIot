@@ -16,17 +16,12 @@ void initWiFi() {
 #else
   WiFi.begin(SSID, PWD);
 #endif
-  
 
-  while (WiFi.status() != WL_CONNECTED) {
-#if DEBUG_MODE || VERBOSE_MODE
-    // Blink LED while connecting; leave on after connected
-    digitalWrite(LED, LOW);
-    delay(250);
-    digitalWrite(LED, HIGH);
-    delay(250);
-#endif
-  }
+  debugPrint("Connecting to WiFi", NULL);
+
+  while (WiFi.status() != WL_CONNECTED);
+
+  debugPrint("Wifi Connected", NULL);
 
   // Register handler to reconnect to WiFi if disconnected.
   WiFi.onEvent(wifiReconnect, SYSTEM_EVENT_STA_DISCONNECTED);
@@ -99,8 +94,20 @@ void initHardwarePins() {
   // Example code from: https://github.com/sparkfun/HX711-Load-Cell-Amplifier/tree/V_1.1/firmware
   scale.begin(CELL_DOUT, CELL_SCLK);
   scale.set_scale(CELL_CALIB);
+
   digitalWrite(CELL_PWDN, HIGH);  // Keep high so as not to start powerdown mode
   digitalWrite(CELL_SPEED, LOW);  // Keep low for 10 SPS.
+
+  scale.tare(CELL_READS);
+
+  pinMode(MOTOR_STBY, OUTPUT);
+  pinMode(MOTOR_IN1, OUTPUT);
+  pinMode(MOTOR_IN2, OUTPUT);
+
+  digitalWrite(MOTOR_STBY, LOW);    // Hold motor on standby until directional pins set.
+  digitalWrite(MOTOR_IN1, HIGH);
+  digitalWrite(MOTOR_IN2, HIGH);
+  digitalWrite(MOTOR_STBY, HIGH);
 }
 
 // Create timer used to mark 1 min periods during a portion.
