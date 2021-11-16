@@ -112,5 +112,5 @@ void initHardwarePins() {
 
 // Create timer used to mark 1 min periods during a portion.
 void initDispTimer() {
-  esp_timer_create(&dispTimerArgs, &dispTimerHandle);
+  esp_timer_create(&dispTimerArgs, &dispTimer);
 }

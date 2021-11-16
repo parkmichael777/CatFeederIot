@@ -26,6 +26,6 @@ const esp_timer_create_args_t clientTaskArgs = {
 
 
 void initClientTask() {
-  esp_timer_create(&clientTaskArgs, &clientTaskHandle);
-  esp_timer_start_periodic(clientTaskHandle, POLL_PERIOD);
+  esp_timer_create(&clientTaskArgs, &clientTimer);
+  esp_timer_start_periodic(clientTimer, POLL_PERIOD);
 }

@@ -1,6 +1,4 @@
-void printState() {
-  int i = nearbyCat();
-
+void printState(int i) {
   if (i == -1 || (profileBuffer[i].inUse == 0)) {
     verbosePrint("No cat nearby, or invalid/unknown id tag used.", NULL);
     return;

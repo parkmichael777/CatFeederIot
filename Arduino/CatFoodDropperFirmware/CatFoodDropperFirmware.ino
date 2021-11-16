@@ -10,8 +10,8 @@
 #include "CatProfile.h"
 
 /* Globals */
-esp_timer_handle_t clientTaskHandle;
-esp_timer_handle_t dispTimerHandle;             // Timer to count 1 min period during the portion.
+esp_timer_handle_t clientTimer;                 // 1 min timer that launches client task.
+esp_timer_handle_t dispTimer;                   // Timer to count 1 min period during the portion.
 
 volatile uint8_t dispFlag = 0;                  // Indicates when 1 min period passed.
 
@@ -130,7 +130,7 @@ start:
   }
 
   // Arm dispense timer.
-  esp_timer_start_once(dispTimerHandle, POLL_PERIOD);
+  esp_timer_start_once(dispTimer, POLL_PERIOD);
 
   // Drive motor until weight reaches max per period or max per portion.
   float weight = scale.get_units(CELL_READS);
@@ -173,5 +173,5 @@ start:
   dataPacket newData = {catIndex, amountEaten, (TIME_T)time(NULL)};
   xQueueSend(sendQueue, &newData, 0);
 
-  printState();
+  printState(catIndex);
 }
