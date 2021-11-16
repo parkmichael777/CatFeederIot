@@ -75,10 +75,6 @@ void setup() {
 #if DEBUG_MODE || VERBOSE_MODE
   // Enable serial monitor
   Serial.begin(115200);
-
-  // Initialize pin 13 for debug purposes
-  pinMode(LED, OUTPUT);
-  digitalWrite(LED, LOW);
 #endif
 
   // Initialize System
@@ -106,17 +102,10 @@ start:
   checkEINTR();
   updateCatProfiles();
 
-  // TODO: Add delay inside 'NEARBY?' if-statement to prevent wasted cycles?
-
-  if (digitalRead(RFID_NEARBY) == LOW)
-    goto start;
-
   // Retrieve profileBuffer index of cat at bowl.
   int catIndex = nearbyCat();
-  if (catIndex == -1) {
-    debugPrint("No valid catIDs nearby", NULL);
+  if ((catIndex == -1) || (profileBuffer[catIndex].inUse == 0))
     goto start;
-  }
 
   catProfile *p = &profileBuffer[catIndex];
 
@@ -126,17 +115,14 @@ start:
 
   // Initialize portion if this is the first time activating
   if (p->inProgress == 0) {
-    // Tare weight
-    scale.tare();
-
-    p->amountDispensed = 0;
+    p->amountEaten = 0;
     p->inProgress = 1;
     p->isComplete = 0;
   }
 
   // Update state when portion has been fully dispensed.
-  if (p->amountDispensed >= p->portionGrams) {
-    p->amountDispensed = 0;
+  if (p->amountEaten >= p->portionGrams) {
+    p->amountEaten = 0;
     p->inProgress = 0;
     p->isComplete = 1;
 
@@ -146,30 +132,46 @@ start:
   // Arm dispense timer.
   esp_timer_start_once(dispTimerHandle, POLL_PERIOD);
 
-  // TODO: Drive motor until weight reaches max per period or max per portion.
-  float initial_weight = scale.get_units();
-  float curr_weight = initial_weight;
-  while (curr_weight < p->maxRate) {
-    // Break if overall portion limit is reached
-    if ((p->amountDispensed + curr_weight) < p->portionGrams)
-      break;
+  // Drive motor until weight reaches max per period or max per portion.
+  float weight = scale.get_units(CELL_READS);
 
-    // TODO: Dispense one divot.
+  debugPrint("Max Rate", p->maxRate);
+  debugPrint("Initial Weight", weight);
 
-    curr_weight = scale.get_units();
+  if (weight < p->maxRate) {
+    // Turn on motor.
+    digitalWrite(MOTOR_IN1, LOW);
+
+    while (weight < p->maxRate) {
+      // Break if overall portion limit is reached
+      if ((p->amountEaten + weight) >= p->portionGrams)
+        break;
+  
+      weight = scale.get_units(CELL_READS);
+      debugPrint("Current Weight", weight);
+    }
   }
 
-  // TODO: Drive motor to cover hole if needed
-
-  // TODO: increment amountDispensed
-  p->amountDispensed += curr_weight - initial_weight;
-
-  // TODO: send data
-  dataPacket newData = {catIndex, curr_weight - initial_weight, (TIME_T)time(NULL)};
-  xQueueSend(sendQueue, &newData, 0);
+  // Turn off motor.
+  digitalWrite(MOTOR_IN1, HIGH);
 
   // Wait until disp timer elapses before dispensing next portion
-  while (dispFlag);
+  while (dispFlag == 0);
+
+  // TODO: Break and stop timer if cat leaves AND new cat arrives.
 
   dispFlag = 0;
+
+  // Increment amountEaten
+  float amountEaten = weight - scale.get_units(CELL_READS);
+  if (amountEaten < 0)
+    amountEaten = 0;
+
+  p->amountEaten += amountEaten;
+
+  // Send data
+  dataPacket newData = {catIndex, amountEaten, (TIME_T)time(NULL)};
+  xQueueSend(sendQueue, &newData, 0);
+
+  printState();
 }
