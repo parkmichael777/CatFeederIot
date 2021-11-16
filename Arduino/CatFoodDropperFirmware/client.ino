@@ -1,9 +1,7 @@
 void clientTask() {
   retrieveCatProfiles();    // Ignore ret value; we poll every minute.
 
-  // TODO: temporarily yield here if task triggers WDT.
-
-  // TODO: Call sendData function here.
+  // Send data to server.
   dataPacket newData = {0};
 
   WiFiClient c;
@@ -11,7 +9,7 @@ void clientTask() {
   while (xQueueReceive(sendQueue, &newData, 0)) {
     // Convert host bytes to network order.
     NTOHL((uint8_t*)&newData.profileIndex);
-    NTOHL((uint8_t*)&newData.amountDispensed);
+    NTOHL((uint8_t*)&newData.amountEaten);
     NTOHLL((uint8_t*)&newData.timeStamp);
     
     client.post("BowlData", "application/bowl-data", sizeof(dataPacket), (uint8_t*)&newData);
