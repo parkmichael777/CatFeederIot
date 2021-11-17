@@ -94,6 +94,8 @@ void setup() {
   initClientTask();
 
   // Device task launched through loop()
+
+  debugPrint("Setup Complete", NULL);
 }
 
 void loop() {
@@ -130,7 +132,7 @@ start:
   }
 
   // Arm dispense timer.
-  esp_timer_start_once(dispTimer, POLL_PERIOD);
+  esp_timer_start_once(dispTimer, DISP_PERIOD);
 
   // Drive motor until weight reaches max per period or max per portion.
   float weight = scale.get_units(CELL_READS);
@@ -150,28 +152,37 @@ start:
       weight = scale.get_units(CELL_READS);
       debugPrint("Current Weight", weight);
     }
+
+    // Turn off motor.
+    delay(50);
+    digitalWrite(MOTOR_IN1, HIGH);
   }
 
-  // Turn off motor.
-  digitalWrite(MOTOR_IN1, HIGH);
-
   // Wait until disp timer elapses before dispensing next portion
-  while (dispFlag == 0);
+  while (dispFlag == 0) {
+    int tempIndex = nearbyCat();
 
-  // TODO: Break and stop timer if cat leaves AND new cat arrives.
+    if ((tempIndex != -1) && (tempIndex != catIndex)) {
+      esp_timer_stop(dispTimer);
+      break;
+    }
+  }
 
   dispFlag = 0;
 
   // Increment amountEaten
   float amountEaten = weight - scale.get_units(CELL_READS);
-  if (amountEaten < 0)
+  if (amountEaten < 0 || amountEaten < 0.06)
     amountEaten = 0;
 
-  p->amountEaten += amountEaten;
+  // Add to total amountEaten and record to server.
+  if (amountEaten != 0) {
+    p->amountEaten += amountEaten;
+    dataPacket newData = {catIndex, amountEaten, (TIME_T)time(NULL)};
+    xQueueSend(sendQueue, &newData, 0);
+  }
 
-  // Send data
-  dataPacket newData = {catIndex, amountEaten, (TIME_T)time(NULL)};
-  xQueueSend(sendQueue, &newData, 0);
+  debugPrint("Amount Eaten", p->amountEaten);
 
   printState(catIndex);
 }
