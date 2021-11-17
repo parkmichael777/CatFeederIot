@@ -27,13 +27,13 @@ typedef struct __attribute__((__packed__)) {
     uint64_t catID;                         // Holds 5 byte RFID tag number.
 
     // Visual aid:
-    // Time axis |----Feeding Period----|---Waiting Period---|   |--Next Feeding Period--|--so on...
+    // Time axis |----Feeding Period----|---Waiting Period---|--Next Feeding Period--|--so on...
     //           ^StartISR              ^EndISR                  ^StartISR               ^EndISR
     //
     // The feeding period is split up into smaller 1 minute periods where the
-    // dropper tops off the bowl to a max weight of maxRate.
+    // dropper tops off the bowl to a max weight of maxRate. Feeding periods should not overlap.
     
-    uint32_t amountEaten;                   // Grams of food eaten within this portion.
+    float amountEaten;                      // Grams of food eaten within this portion.
     uint8_t canEat;                         // Indicates whether in feeding period.
     uint8_t inProgress;                     // Indicates whether cat started current feeding period.
     uint8_t isComplete;                     // Indicates whether cat finished alloted portion for
