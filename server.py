@@ -30,19 +30,16 @@ if __name__ == "__main__":
     cat_id_3 = 14155138203640
     
     hour = 9
-    min = 37
+    min = 4
     pm = 1
-    
-    h3 = 6
-    m3 = 2
     
     # Create test files
     f = open("CatProfiles", "wb")
     pack_format = "BffBQQQQQQ"
     p = pack("!" + pack_format + pack_format + pack_format,
-        1, 1.0, 5.0, 1, time(hour, min, pm), time(hour, min + 2, pm), time(hour, min + 4, pm), 1, 1, cat_id_1,
-        0, 2.75, 1.0, 3, time(hour, min, pm), time(hour, min + 2, pm), time(hour, min + 4, pm), 0, 0, cat_id_2,
-        0, 3.75, 1.0, 3, time(h3, m3, pm), time(h3, m3 + 2, pm), time(h3, m3 + 4, pm), 0, 0, cat_id_3)
+        1, 1.0, 5.0, 3, time(hour, min, pm), time(hour + 1, min + 5, pm), time(hour + 2, min + 5, pm), 1, 1, cat_id_1,
+        1, 2.5, 5.0, 3, time(hour, min, pm), time(hour + 1, min + 5, pm), time(hour + 2, min + 5, pm), 0, 0, cat_id_2,
+        1, 5.0, 10.0, 3, time(hour, min, pm), time(hour + 1, min + 5, pm), time(hour + 2, min + 5, pm), 0, 0, cat_id_3)
     
     f.write(p)
     
