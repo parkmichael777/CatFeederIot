@@ -5,9 +5,10 @@
 #define NUM_CATS      3               // Max num of supported cats. 
                                       // Changing NUM_CATS requires manual additions to intrArgs :(
 #define NUM_PORTIONS  5               // Max num of schedulable portions.
-#define FEED_PERIOD   60 * (60000)    // Number of ms portion is available for after it starts.
-#define POLL_PERIOD   60 * (1000000)  // Number of us until bowl polls server for catProfile updates.
-#define DISP_PERIOD   60 * (1000000)  // Number of us each dispensing period within a portion lasts.
+#define CELL_READS    2              // Number of readings to average in order to return one weight.
+#define FEED_PERIOD   60 * MS_PER_MIN // Number of ms portion is available for after it starts.
+#define POLL_PERIOD   60 * US_PER_SEC // Number of us until bowl polls server for catProfile updates.
+#define DISP_PERIOD   15 * US_PER_SEC // Number of us each dispensing period within a portion lasts.
 
 /* WiFi and Server Config */
 #define EDU_WIFI      1               // Whether we are connecting to IllinoisNet or not.
@@ -29,6 +30,8 @@
 
 /* Constants */
 #define DAY           86400000        // Number of milliseconds in a day.
+#define MS_PER_MIN    60000           // Number of milliseconds in a minute.
+#define US_PER_SEC    1000000         // Number of microseconds in a second.
 #define RFID_DATA     10              // Number of data bytes in RFID packet
 
 /* Hardware Pins */
@@ -42,7 +45,6 @@
 #define CELL_PWDN     18
 #define CELL_SPEED    23
 #define CELL_CALIB    -5990.0        // Tuned via a known control weight.
-#define CELL_READS    3              // Number of readings to average in order to return one weight.
 
 #define MOTOR_STBY    14
 #define MOTOR_IN1     12
