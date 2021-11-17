@@ -6,9 +6,10 @@
                                       // Changing NUM_CATS requires manual additions to intrArgs :(
 #define NUM_PORTIONS  5               // Max num of schedulable portions.
 #define CELL_READS    2               // Number of readings to average in order to return one weight.
+#define CELL_TARES    50              // Number of readings to average for device tare.
 #define FEED_PERIOD   60 * MS_PER_MIN // Number of ms portion is available for after it starts.
 #define POLL_PERIOD   60 * US_PER_SEC // Number of us until bowl polls server for catProfile updates.
-#define DISP_PERIOD   15 * US_PER_SEC // Number of us each dispensing period within a portion lasts.
+#define DISP_PERIOD   60 * US_PER_SEC // Number of us each dispensing period within a portion lasts.
 
 /* WiFi and Server Config */
 #define EDU_WIFI      1               // Whether we are connecting to IllinoisNet or not.

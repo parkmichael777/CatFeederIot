@@ -124,7 +124,6 @@ start:
 
   // Update state when portion has been fully dispensed.
   if (p->amountEaten >= p->portionGrams) {
-    p->amountEaten = 0;
     p->inProgress = 0;
     p->isComplete = 1;
 
@@ -172,6 +171,8 @@ start:
 
   // Increment amountEaten
   float amountEaten = weight - scale.get_units(CELL_READS);
+
+  // Vibrations in our load cell can cause phantom weight losses, don't count those as food eaten.
   if (amountEaten < 0 || amountEaten < 0.06)
     amountEaten = 0;
 

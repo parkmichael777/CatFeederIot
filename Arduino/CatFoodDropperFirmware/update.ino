@@ -38,6 +38,17 @@ TIME_T getTime() {
 void updateToFeeding(catProfile *p, TIME_T currTime, TIME_T prevTime) {
   p->canEat = 1;
 
+  /* If update changes state from waiting->feeding, isComplete and inProgress already set.
+   * If update changes state from feeding->feeding, isComplete and inProgress should not be changed
+   *  except in the case that the owner increased the portionGrams.
+   */
+
+  // If owner increased portionGrams, allow cat to eat again.
+  if (p->amountEaten < p->portionGrams) {
+    p->isComplete = 0;
+    p->inProgress = 1;
+  }
+
   verbosePrint("P+FDTime", prevTime + FEED_PERIOD);
   verbosePrint("CurrTime", currTime);
   verbosePrint("Registered end time in", prevTime + FEED_PERIOD - currTime);

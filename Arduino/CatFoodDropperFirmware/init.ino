@@ -101,7 +101,7 @@ void initHardwarePins() {
   digitalWrite(CELL_PWDN, HIGH);  // Keep high so as not to start powerdown mode
   digitalWrite(CELL_SPEED, LOW);  // Keep low for 10 SPS.
 
-  scale.tare(50);
+  scale.tare(CELL_TARES);
 
   pinMode(MOTOR_STBY, OUTPUT);
   pinMode(MOTOR_IN1, OUTPUT);
