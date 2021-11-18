@@ -17,7 +17,7 @@ int handle200OK(HttpClient & client) {
     String headerName = client.readHeaderName();
 
     if (headerName.equals("Cat-Profile-Version")) {
-      catProfileVersion = (uint32_t)(client.readHeaderValue().toInt());
+      catProfileVersion = client.readHeaderValue().toInt();
       versionFlag = 1;
 
       client.skipResponseHeaders();

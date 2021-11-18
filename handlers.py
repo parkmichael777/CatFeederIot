@@ -2,15 +2,14 @@ from socketserver import ThreadingMixIn
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
 from struct import pack, unpack
-import numpy as np
 
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
-    profile_version = np.uint(1)
+    profile_version = int(1)
     pass
 
 class HTTPRequestHandler(BaseHTTPRequestHandler):
     def do_GET(self):
-        device_version = np.uint(self.headers["Cat-Profile-Version"])
+        device_version = int(self.headers["Cat-Profile-Version"])
         
 #        print(device_version)
         

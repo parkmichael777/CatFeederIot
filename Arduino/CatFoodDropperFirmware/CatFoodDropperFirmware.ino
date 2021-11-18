@@ -18,7 +18,7 @@ volatile uint8_t dispFlag = 0;                  // Indicates when 1 min period p
 volatile uint64_t catID = 0;                    // RFID tag ID of newly arrived cat.
 SemaphoreHandle_t catIDLock = xSemaphoreCreateMutex();
 
-uint32_t catProfileVersion = 0;                 // Server versioning ID for profileBuffer.
+int catProfileVersion = 0;                      // Server versioning ID for profileBuffer.
 catProfile profileBuffer[NUM_CATS] = {0};       // Working copy of cat profiles.
 
 volatile uint8_t updateFlag = 0;                // Indicates whether catProfile update is available.
