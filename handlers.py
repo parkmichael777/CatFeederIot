@@ -6,7 +6,7 @@ import shutil
 from struct import pack, unpack
 
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
-    profile_version = int(0)
+    profile_version = int(0)  # Must acquire profile_lock to use.
     profile_lock = threading.Lock()
     data_lock = threading.Lock()
     webapp_dir = "webapp"
@@ -17,11 +17,12 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
     close_connection = True
 
     def device_get_handler(self):
-        #TODO: ADD LOCK
-    
         device_version = int(self.headers["Cat-Profile-Version"])
         
+        self.server.profile_lock.acquire()
         if device_version == self.server.profile_version:
+            self.server.profile_lock.release()
+
             self.send_response(204, "No Content")
             self.end_headers()
             self.flush_headers()
@@ -32,12 +33,10 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
         self.end_headers()
         self.flush_headers()
 
-        self.server.profile_lock.acquire()
         with open(self.path, 'rb') as f:
-            profiles = f.read()
+            for line in f:
+                self.wfile.write(line)
         self.server.profile_lock.release()
-        
-        self.wfile.write(profiles)
 
     def client_get_handler(self):
         if self.requestline == "":
@@ -45,14 +44,22 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
             self.end_headers()
             self.flush_headers()
             return
-
-        with open(self.server.webapp_dir + self.path, 'rb') as f:
-            self.send_response(200, "OK")
-            self.end_headers()
-            self.flush_headers()
             
-            for line in f:
-                self.wfile.write(line)
+        self.send_response(200, "OK")
+        self.end_headers()
+        self.flush_headers()
+        
+        data_request = 0;
+        if "data/" in self.requestline:
+            self.server.data_lock.acquire()
+            with open(self.server.webapp_dir + self.path, 'rb') as f:
+                for line in f:
+                    self.wfile.write(line)
+            self.server.data_lock.release()
+        else:
+            with open(self.server.webapp_dir + self.path, 'rb') as f:
+                for line in f:
+                    self.wfile.write(line)
         
     def device_post_handler(self):
         self.send_response(200, "OK")
