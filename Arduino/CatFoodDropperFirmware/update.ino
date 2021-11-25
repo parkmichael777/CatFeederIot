@@ -44,7 +44,7 @@ void updateToFeeding(catProfile *p, TIME_T currTime, TIME_T prevTime) {
    */
 
   // If owner increased portionGrams, allow cat to eat again.
-  if (p->amountEaten < p->portionGrams) {
+  if ((p->amountEaten < p->portionGrams) && (p->isComplete == 1)) {
     p->isComplete = 0;
     p->inProgress = 1;
   }
