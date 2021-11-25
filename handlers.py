@@ -9,7 +9,8 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
     profile_version = int(0)
     profile_lock = threading.Lock()
     data_lock = threading.Lock()
-    home_dir = "webapp"
+    webapp_dir = "webapp"
+    data_dir = webapp_dir + "/data"
     pass
 
 class HTTPRequestHandler(BaseHTTPRequestHandler):
@@ -45,7 +46,7 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
             self.flush_headers()
             return
 
-        with open(self.server.home_dir + self.path, 'rb') as f:
+        with open(self.server.webapp_dir + self.path, 'rb') as f:
             self.send_response(200, "OK")
             self.end_headers()
             self.flush_headers()
@@ -76,7 +77,7 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
         self.send_response(200, "OK")
         self.end_headers()
         self.flush_headers()
-            
+
         cat_profile = int(self.headers["Cat-Profile-Index"])
         message = self.rfile.read()
         
@@ -86,16 +87,13 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
             f.write(message)
             self.server.profile_version += 1
         self.server.profile_lock.release()
-
-        #TODO: check inUse to add or delete data file.
         
-        in_use = unpack("!B", message)
+        in_use, max_rate, portion_grams, num_portions, p0, p1, p2, p3, p4, cat_id = unpack("!BffBQQQQQQ", message)
         
+        # If a profile was deleted, delete the profile's data.
         if in_use == 0:
-            shutil.rmtree(self.server.home_dir + "/" + str(cat_profile))
-        
-#        in_use, max_rate, portion_grams, num_portions, p0, p1, p2, p3, p4, cat_id = unpack("!BffBQQQQQQ", message)
-#
+            shutil.rmtree(self.server.data_dir + "/" + str(cat_profile))
+
 #        print("inUse:", in_use)
 #        print("maxRate:", max_rate)
 #        print("portionGrams:", portion_grams)
