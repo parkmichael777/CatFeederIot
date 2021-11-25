@@ -66,6 +66,7 @@ int retrieveCatProfiles() {
   // Request CatProfiles
   client.beginRequest();
   client.get("CatProfiles");
+  client.sendHeader("Cat-Request-Type", "device");
   client.sendHeader("Cat-Profile-Version", String(catProfileVersion));
   client.endRequest();
 

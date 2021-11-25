@@ -11,8 +11,11 @@ void clientTask() {
     NTOHL((uint8_t*)&newData.profileIndex);
     NTOHL((uint8_t*)&newData.amountEaten);
     NTOHLL((uint8_t*)&newData.timeStamp);
-    
+
+    client.beginRequest();
     client.post("BowlData", "application/bowl-data", sizeof(dataPacket), (uint8_t*)&newData);
+    client.sendHeader("Cat-Request-Type", "device");
+    client.endRequest();
   }
   client.stop();
 }

@@ -25,8 +25,8 @@ volatile uint8_t updateFlag = 0;                // Indicates whether catProfile 
 catProfileServer updateBuffer[NUM_CATS] = {0};  // Stores pending updates to cat profiles.
 SemaphoreHandle_t updateLock = xSemaphoreCreateMutex();
 
-QueueHandle_t uartQueue;                            // Queues UART events.
-QueueHandle_t sendQueue;                            // Queues data packets to be sent to server.
+QueueHandle_t uartQueue;                        // Queues UART events.
+QueueHandle_t sendQueue;                        // Queues data packets to be sent to server.
 
 HX711 scale;
 
