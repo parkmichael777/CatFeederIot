@@ -124,17 +124,6 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
             shutil.rmtree(self.server.data_dir + "/" + str(cat_profile))
             os.mkdir(self.server.data_dir + "/" + str(cat_profile))
 
-#        print("inUse:", in_use)
-#        print("maxRate:", max_rate)
-#        print("portionGrams:", portion_grams)
-#        print("numPortions:", num_portions)
-#        print("Time 0:", p0)
-#        print("Time 1:", p1)
-#        print("Time 2:", p2)
-#        print("Time 3:", p3)
-#        print("Time 4:", p4)
-#        print("CatID:", cat_id)
-
     def do_GET(self):
         if self.headers["Cat-Request-Type"] == "device":
             self.device_get_handler()
