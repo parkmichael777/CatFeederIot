@@ -13,8 +13,10 @@ void clientTask() {
     NTOHLL((uint8_t*)&newData.timeStamp);
 
     client.beginRequest();
-    client.post("BowlData", "application/bowl-data", sizeof(dataPacket), (uint8_t*)&newData);
+    client.post("BowlData");
     client.sendHeader("Cat-Request-Type", "device");
+    client.beginBody();
+    client.write((uint8_t*)&newData, sizeof(newData));
     client.endRequest();
   }
   client.stop();
