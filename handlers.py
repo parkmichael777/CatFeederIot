@@ -1,7 +1,10 @@
 from socketserver import ThreadingMixIn
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import threading
+import os
 import shutil
+import time
+import json
 
 from struct import pack, unpack
 
@@ -62,17 +65,36 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
                     self.wfile.write(line)
         
     def device_post_handler(self):
-        self.send_response(200, "OK")
-        self.end_headers()
-        self.flush_headers()
-
         cat_idx, amt_eat, timestamp = unpack("!ifQ", self.rfile.read())
         print("Cat:", cat_idx);
         print("Amt Eaten:", amt_eat)
         print("Time:", timestamp)
+        
+        # Construct filename using timestamped date.
+        time_struct = time.localtime(timestamp)
+        jsonfile = str(cat_idx) + "/" + time.strftime('%Y-%m-%d', time_struct) + ".json"
 
-        # TODO: save to file with lock
-        # TODO: update profile version.
+        print("Storing in", jsonfile)
+
+        ## Write data to file 3#
+        self.server.data_lock.acquire()
+        bowl_data = {}
+        
+        # If file already exists, append; otherwise, create
+        try:
+            with open(self.server.data_dir + "/" + jsonfile, "r") as f:
+                bowl_data = json.load(f)
+        except FileNotFoundError:
+            pass
+        
+        with open(self.server.data_dir + "/" + jsonfile, "w+") as f:
+            bowl_data[str(time_struct.tm_hour * 60 + time_struct.tm_min)] = amt_eat
+            json.dump(bowl_data, f)
+        self.server.data_lock.release()
+        
+        self.send_response(200, "OK")
+        self.end_headers()
+        self.flush_headers()
 
     def client_post_handler(self):
         if self.headers["Cat-Profile-Index"] == None:
@@ -100,6 +122,7 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
         # If a profile was deleted, delete the profile's data.
         if in_use == 0:
             shutil.rmtree(self.server.data_dir + "/" + str(cat_profile))
+            os.mkdir(self.server.data_dir + "/" + str(cat_profile))
 
 #        print("inUse:", in_use)
 #        print("maxRate:", max_rate)
