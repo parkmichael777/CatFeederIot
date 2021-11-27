@@ -55,14 +55,28 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
         data_request = 0;
         if "data/" in self.requestline:
             self.server.data_lock.acquire()
-            with open(self.server.webapp_dir + self.path, 'rb') as f:
-                for line in f:
-                    self.wfile.write(line)
+            try:
+                with open(self.server.webapp_dir + self.path, 'rb') as f:
+                    for line in f:
+                        self.wfile.write(line)
+            except FileNotFoundError:
+                self.send_response(404, "Not Found")
+                self.end_headers()
+                self.flush_headers()
             self.server.data_lock.release()
         else:
-            with open(self.server.webapp_dir + self.path, 'rb') as f:
-                for line in f:
-                    self.wfile.write(line)
+            # No file requested redirects to HomePage.html
+            if self.path == "/":
+               self.path = "/HomePage.html"
+               
+            try:
+                with open(self.server.webapp_dir + self.path, 'rb') as f:
+                    for line in f:
+                        self.wfile.write(line)
+            except FileNotFoundError:
+                self.send_response(404, "Not Found")
+                self.end_headers()
+                self.flush_headers()
         
     def device_post_handler(self):
         cat_idx, amt_eat, timestamp = unpack("!ifQ", self.rfile.read())
@@ -121,8 +135,10 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
         
         # If a profile was deleted, delete the profile's data.
         if in_use == 0:
+            self.server.data_lock.acquire()
             shutil.rmtree(self.server.data_dir + "/" + str(cat_profile))
             os.mkdir(self.server.data_dir + "/" + str(cat_profile))
+            self.server.data_lock.release()
 
     def do_GET(self):
         if self.headers["Cat-Request-Type"] == "device":
