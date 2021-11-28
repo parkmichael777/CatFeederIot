@@ -9,7 +9,7 @@ if __name__ == "__main__":
     if EDU_WIFI:
         ip = "10.195.29.164"
     else:
-        ip = "192.168.1.16"
+        ip = "192.168.1.5"
 
     server = ThreadedHTTPServer((ip, 8000), HTTPRequestHandler)
     

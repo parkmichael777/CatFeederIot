@@ -21,13 +21,13 @@
 #else
 #define SSID          "NETGEAR13"
 #define PWD           "largewater374"
-#define SERVER_IP     "192.168.1.3"
+#define SERVER_IP     "192.168.1.5"
 #define SERVER_PORT   8000
 #endif
 
 /* Debug Config */
 #define DEBUG_MODE    1               // Enable/Disable extra logging.
-#define VERBOSE_MODE  0               // Enable/Disable extra extra logging.
+#define VERBOSE_MODE  1               // Enable/Disable extra extra logging.
 
 /* Constants */
 #define DAY           86400000        // Number of milliseconds in a day.

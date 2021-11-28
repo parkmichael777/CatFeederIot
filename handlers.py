@@ -77,6 +77,10 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
                 self.send_response(404, "Not Found")
                 self.end_headers()
                 self.flush_headers()
+            except IsADirectoryError:
+                self.send_response(400, "Bad Request")
+                self.end_headers()
+                self.flush_headers()
         
     def device_post_handler(self):
         cat_idx, amt_eat, timestamp = unpack("!ifQ", self.rfile.read())
@@ -132,6 +136,18 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
         self.server.profile_lock.release()
         
         in_use, max_rate, portion_grams, num_portions, p0, p1, p2, p3, p4, cat_id = unpack("!BffBQQQQQQ", message)
+        
+        print("Received Profiles:")
+        print("    In Use:", in_use)
+        print("    Max Rate:", max_rate)
+        print("    Portion Grams:", portion_grams)
+        print("    Num Portions:", num_portions)
+        print("    P0:", p0)
+        print("    P1:", p1)
+        print("    P2:", p2)
+        print("    P3:", p3)
+        print("    P4:", p4)
+        print("    Cat ID:", cat_id)
         
         # If a profile was deleted, delete the profile's data.
         if in_use == 0:
