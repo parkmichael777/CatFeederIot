@@ -4,7 +4,7 @@ from handlers import ThreadedHTTPServer, HTTPRequestHandler
 from struct import pack
 
 if __name__ == "__main__":
-    EDU_WIFI = 0
+    EDU_WIFI = 1
     
     if EDU_WIFI:
         ip = "10.195.29.164"
