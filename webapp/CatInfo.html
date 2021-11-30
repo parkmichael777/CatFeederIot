@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<style>
+
+H1{text-align: center;}
+P{text-align: center;}
+.button1{
+    position: relative;
+    top: 110px;
+    left: 150px;
+    width: 600px;
+    height: 600px;
+}
+.button2{
+    position: relative;
+    top: 112px;
+    left: 145px;
+    width: 600px;
+    height: 600px;
+}
+
+
+</style>
+ <title>HTML img Tag</title>
+</head>
+<body>
+<a href="HomePage.html">
+<button>Back to the Home Page</button>
+</a>
+<br>
+<script>
+myStorage = window.localStorage;
+var name = window.prompt("Enter your cat's name: ");
+console.log(name);
+console.log(localStorage.getItem('catName1'));
+//console.log(localStorage.getItem('catName2'));
+//console.log(localStorage.getItem('catName3'));
+console.log(localStorage.getItem(('milliseconds1_cat1')));
+console.log(localStorage.getItem('milliseconds2_cat1'));
+  
+
+if(name == localStorage.getItem('catName1'))
+{
+	document.write("Name: " + localStorage.getItem('catName1'));
+	document.write("<br>");
+	document.write("Max Rate: " + localStorage.getItem('maxRate1'));
+	document.write("<br>");
+	document.write("Portion in Grams: " + localStorage.getItem('portionGrams1'));
+	document.write("<br>");
+	document.write("Number of Portions: " + localStorage.getItem('numPortions1'));
+	document.write("<br>");
+	document.write("Cat Id : " + localStorage.getItem('catID1'));
+	document.write("<br>");
+}
+if(name == localStorage.getItem('catName2'))
+{
+	document.write("Name: " + localStorage.getItem('catName2'));
+	document.write("<br>");
+	document.write("Max Rate: " + localStorage.getItem('maxRate2'));
+	document.write("<br>");
+	document.write("Portion in Grams: " + localStorage.getItem('portionGrams2'));
+	document.write("<br>");
+	document.write("Number of Portions: " + localStorage.getItem('numPortions2'));
+	document.write("<br>");
+	document.write("Cat Id : " + localStorage.getItem('catID2'));
+	document.write("<br>");
+}
+if(name == localStorage.getItem('catName3'))
+{
+	document.write("Name: " + localStorage.getItem('catName3'));
+	document.write("<br>");
+	document.write("Max Rate: " + localStorage.getItem('maxRate3'));
+	document.write("<br>");
+	document.write("Portion in Grams: " + localStorage.getItem('portionGrams3'));
+	document.write("<br>");
+	document.write("Number of Portions: " + localStorage.getItem('numPortions3'));
+	document.write("<br>");
+	document.write("Cat Id : " + localStorage.getItem('catID3'));
+	document.write("<br>");
+}
+
+</script>
+
+	<a href = "CatInfo.html">
+	<img src="CatPic.png" class="button1">
+	</a>
+	
+	<a href = "Graphs.html">
+	<img src="Graph.png" class="button2">
+	</a>
+	
+</body>
+</html>

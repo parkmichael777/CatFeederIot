@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="shortcut icon" href="#"/>
+<style>
+
+
+H1{text-align: center;}
+P{text-align: center;}
+.button1{
+    position: relative;
+    top: 110px;
+    left: 150px;
+    width: 600px;
+    height: 600px;
+}
+.button2{
+    position: relative;
+    top: 112px;
+    left: 145px;
+    width: 600px;
+    height: 600px;
+}
+
+
+</style>
+ <title>HTML img Tag</title>
+</head>
+<body>
+	<h1>Add New Cat</h1>
+
+	<a href="HomePage.html">
+ 	 <button>Back to the Home Page</button>
+	</a> 
+	<script>
+	var milliseconds1_global = 0;
+	var milliseconds2_global = 0;
+	var milliseconds3_global = 0;
+	var milliseconds4_global = 0;
+	var milliseconds5_global = 0;
+	var milliseconds1_cat1 = 0;
+	var milliseconds2_cat1 = 0;
+	var milliseconds3_cat1 = 0;
+	var milliseconds4_cat1 = 0;
+	var milliseconds5_cat1 = 0;
+	var milliseconds1_cat2 = 0;
+	var milliseconds2_cat2 = 0;
+	var milliseconds3_cat2 = 0;
+	var milliseconds4_cat2 = 0;
+	var milliseconds5_cat2 = 0;
+	var milliseconds1_cat3 = 0;
+	var milliseconds2_cat3 = 0;
+	var milliseconds3_cat3 = 0;
+	var milliseconds4_cat3 = 0;
+	var milliseconds5_cat3 = 0;
+
+	myStorage = window.localStorage;
+	var name = window.prompt("Enter your cat's name: ");
+	var maxRate = window.prompt("Enter the max rate: ");
+	while(maxRate >60)
+	{
+		maxRate = 0;
+		maxRate = window.prompt("That value was too large. Enter the max rate: ");
+	}
+	while(maxRate <=0 )
+	{
+		maxRate = window.prompt("Enter a value above zero. Enter the max rate: ")
+	}
+	var portionGrams = window.prompt("Enter each portion in grams: ");
+	while(portionGrams >60)
+	{
+		portionGrams = 0;
+		portionGrams = window.prompt("That value was too large. Enter each portions in grams: ");
+	}
+	while(portionGrams <=0 )
+	{
+		portionGrams = window.prompt("Enter a value above zero. Enter each portion in grams: ")
+	}
+	var numPortions = window.prompt("Enter the number of portions: ");
+	while(numPortions % 1 != 0)
+	{
+		var numPortions = window.prompt("Enter a non-decimal value. Enter the number of portions: ")
+	}
+	while(numPortions <=0 )
+	{
+		numPortions = window.prompt("Enter a value above zero. Enter the number of portions ")
+	}
+	while(numPortions >5)
+	{
+		numPortions = 0;
+		numPortions = window.prompt("That value was too large, the max is 5. Enter the max rate: ");
+		while(numPortions % 1 != 0)
+	{
+		var numPortions = window.prompt("Enter a non-decimal value. Enter the number of portions: ")
+	}
+	}
+	for(let x = 0; x<numPortions; x++)
+	{
+		if(x == 0)
+		{
+			console.log('hello'); 
+			var time1 = window.prompt("Enter the first eating time (HH:MM): ");
+			var timeParts1 = time1.split(":");
+    		var milliseconds1 = ((+parseInt(timeParts1[0]) * (60000 * 60)) + (+parseInt(timeParts1[1]) * 60000));
+			milliseconds1_global = parseInt(milliseconds1);
+			console.log(milliseconds1);
+			
+			
+			myStorage.setItem('milliseconds1', milliseconds1);
+			while((milliseconds1<0 ) || (milliseconds1>86400000) || (+timeParts1[0]>24) || (+timeParts1[1]>=60))
+			{
+				time1 = window.prompt("That value is not in a time range. Enter an eating time within a postive 24 hour period (HH:MM): ");
+			    timeParts1 = time1.split(":");
+    		    milliseconds1 = ((+parseInt(timeParts1[0]) * (60000 * 60)) + (+parseInt(timeParts1[1]) * 60000));
+				milliseconds1_global = parseInt(milliseconds1);
+				myStorage.setItem('milliseconds1', milliseconds1);
+			}
+		}
+		if(x == 1)
+		{
+			var time2 = window.prompt("Enter the second eating time (HH:MM): ");
+			var timeParts2 = time2.split(":");
+    		var milliseconds2 = ((+parseInt(timeParts2[0]) * (60000 * 60)) + (parseInt(+timeParts2[1]) * 60000));
+			milliseconds2_global = parseInt(milliseconds2);
+			myStorage.setItem('milliseconds2', milliseconds2);
+			while((milliseconds1>milliseconds2) || milliseconds2<milliseconds1+3600000)
+			{
+				time2 = window.prompt("That time was not late enough, it must be an hour past the previous one. Enter a later eating time (HH:MM): ");
+			    timeParts2 = time2.split(":");
+    		    milliseconds2 = ((+parseInt(timeParts2[0]) * (60000 * 60)) + (parseInt(+timeParts2[1]) * 60000));
+				milliseconds2_global = parseInt(milliseconds2);
+				myStorage.setItem('milliseconds2', milliseconds2);
+			}
+			while((milliseconds2<0 ) || (milliseconds2>86400000) || (parseInt(+timeParts2[0])>24) || (parseInt(+timeParts2[1])>=60))
+			{
+				time2 = window.prompt("That value is not in a time range. Enter an eating time within a postive 24 hour period (HH:MM): ");
+			    timeParts2 = time2.split(":");
+    		    milliseconds2 = ((parseInt(+timeParts2[0]) * (60000 * 60)) + (parseInt(+timeParts2[1]) * 60000));
+				milliseconds2_global = parseInt(milliseconds2);
+				myStorage.setItem('milliseconds2', milliseconds2);
+			}
+		}
+		if(x == 2)
+		{
+			var time3 = window.prompt("Enter the third eating time (HH:MM): ");
+			var timeParts3 = time3.split(":");
+    		milliseconds3 = ((+parseInt(timeParts3[0]) * (60000 * 60)) + (+parseInt(timeParts3[1]) * 60000));
+			milliseconds3_global = parseInt(milliseconds3);
+			myStorage.setItem('milliseconds3', milliseconds3);
+			while((milliseconds2>milliseconds3) || milliseconds3<milliseconds2+3600000)
+			{
+				time3 = window.prompt("That time was not late enough, it must be an hour past the previous one. Enter a later eating time (HH:MM): ");
+			    timeParts3 = time3.split(":");
+    		    milliseconds3 = ((parseInt(+timeParts3[0]) * (60000 * 60)) + (parseInt(+timeParts3[1]) * 60000));
+				milliseconds3_global = parseInt(milliseconds3);
+				myStorage.setItem('milliseconds3', milliseconds3);
+			}
+			while((milliseconds3<0 ) || (milliseconds3>86400000) || (parseInt(+timeParts3[0])>24) || (parseInt(+timeParts3[1])>=60))
+			{
+				time3 = window.prompt("That value is not in a time range. Enter an eating time within a postive 24 hour period (HH:MM): ");
+			    timeParts3 = time3.split(":");
+    		    milliseconds3 = ((+parseInt(timeParts3[0]) * (60000 * 60)) + (parseInt(+timeParts3[1]) * 60000));
+				milliseconds3_global = parseInt(milliseconds3);
+				myStorage.setItem('milliseconds3', milliseconds3);
+			}
+		}
+		if(x == 3)
+		{
+			var time4 = window.prompt("Enter the fourth eating time (HH:MM): ");
+			var timeParts4 = time4.split(":");
+    		var milliseconds4 = ((parseInt(+timeParts4[0]) * (60000 * 60)) + (parseInt(+timeParts4[1]) * 60000));
+			milliseconds4_global = parseInt(milliseconds4);
+			myStorage.setItem('milliseconds4', milliseconds4);
+			while((milliseconds3>milliseconds4) || milliseconds4<milliseconds3+3600000)
+			{
+				time4 = window.prompt("That time was not late enough, it must be an hour past the previous one. Enter a later eating time (HH:MM): ");
+			    timeParts4 = time4.split(":");
+    		    milliseconds4 = ((parseInt(+timeParts4[0]) * (60000 * 60)) + (parseInt(+timeParts4[1]) * 60000));
+				milliseconds4_global = parseInt(milliseconds4);
+				myStorage.setItem('milliseconds4', milliseconds4);
+			}
+			while((milliseconds4<0 ) || (milliseconds4>86400000) || (parseInt(+timeParts4[0])>24) || (parseInt(+timeParts4[1])>=60))
+			{
+				time4 = window.prompt("That value is not in a time range. Enter an eating time within a postive 24 hour period (HH:MM): ");
+			    timeParts4 = time4.split(":");
+    		    milliseconds4 = ((paseInt(+timeParts4[0]) * (60000 * 60)) + (paseInt(+timeParts4[1]) * 60000));
+				milliseconds4_global = parseInt(milliseconds4);
+				myStorage.setItem('milliseconds4', milliseconds4);
+			}
+		}
+		if(x == 4)
+		{
+			var time5 = window.prompt("Enter the fifth eating time (HH:MM): ");
+			var timeParts5 = time5.split(":");
+    		var milliseconds5 = ((paseInt(+timeParts5[0]) * (60000 * 60)) + (paseInt(+timeParts5[1]) * 60000));
+			milliseconds5_global = parseInt(milliseconds5);
+			myStorage.setItem('milliseconds5', milliseconds5);
+			while((milliseconds4>milliseconds5) || milliseconds5<=milliseconds4+3600000)
+			{
+				time5 = window.prompt("That time was not late enough, it must be an hour past the previous one. Enter a later eating time (HH:MM): ");
+			    timeParts5 = time5.split(":");
+    		    milliseconds5 = ((paseInt(+timeParts5[0]) * (60000 * 60)) + (paseInt(+timeParts5[1]) * 60000));
+				milliseconds5_global = parseInt(milliseconds5);
+				myStorage.setItem('milliseconds5', milliseconds5);
+			}
+			while((milliseconds5<0 ) || (milliseconds5>86400000) || (+timeParts5[0]>24) || (+timeParts5[1]>=60))
+			{
+				time5 = window.prompt("That value is not in a time range. Enter an eating time within a postive 24 hour period (HH:MM): ");
+			    timeParts5 = time5.split(":");
+    		    milliseconds5 = ((+paseInt(timeParts5[0]) * (60000 * 60)) + (paseInt(+timeParts5[1]) * 60000));
+				milliseconds5_global = parseInt(milliseconds5);
+				myStorage.setItem('milliseconds5', milliseconds5);
+			}
+		}
+	}
+	if(numPortions==0)
+	{
+		var milliseconds1 = 0;
+		myStorage.setItem('milliseconds1', milliseconds1);
+		milliseconds1_global = parseInt(milliseconds1);
+		var milliseconds2 = 0;
+		myStorage.setItem('milliseconds2', milliseconds2);
+		milliseconds2_global = parseInt(milliseconds2);
+		var milliseconds3 = 0;
+		myStorage.setItem('milliseconds3', milliseconds3);
+		milliseconds3_global = parseInt(milliseconds3);
+		var milliseconds4 = 0;
+		myStorage.setItem('milliseconds4', milliseconds4);
+		milliseconds4_global = parseInt(milliseconds4);
+		var milliseconds5 = 0;
+		myStorage.setItem('milliseconds5', milliseconds5);
+		milliseconds5_global = parseInt(milliseconds5);
+	}
+	if(numPortions==1)
+	{
+		var milliseconds2 = 0;
+		myStorage.setItem('milliseconds2', milliseconds2);
+		milliseconds2_global = parseInt(milliseconds2);
+		var milliseconds3 = 0;
+		myStorage.setItem('milliseconds3', milliseconds3);
+		milliseconds3_global = parseInt(milliseconds3);
+		console.log(milliseconds2_global);
+		var milliseconds4 = 0;
+		myStorage.setItem('milliseconds4', milliseconds4);
+		milliseconds4_global = parseInt(milliseconds4);
+		var milliseconds5 = 0;
+		myStorage.setItem('milliseconds5', milliseconds5);
+		milliseconds5_global = parseInt(milliseconds5);
+	}
+	if(numPortions==2)
+	{
+		var milliseconds3 = 0;
+		myStorage.setItem('milliseconds3', milliseconds3);
+		var milliseconds4 = 0;
+		myStorage.setItem('milliseconds4', milliseconds4);
+		var milliseconds5 = 0;
+		myStorage.setItem('milliseconds5', milliseconds5);
+	}
+	if(numPortions==3)
+	{
+		var milliseconds4 = 0;
+		myStorage.setItem('milliseconds4', milliseconds4);
+		var milliseconds5 = 0;
+		myStorage.setItem('milliseconds5', milliseconds5);
+	}
+	if(numPortions==4)
+	{
+		var milliseconds5 = 0;
+		myStorage.setItem('milliseconds5', milliseconds5);
+	}
+	console.log(milliseconds1);
+	console.log(milliseconds2);
+	console.log(milliseconds3);
+	console.log(milliseconds4);
+	console.log(milliseconds5);
+
+	var catID = window.prompt("Enter the cat's ID: ");
+	while(catID >9223372036854775807)
+	{
+		catID = window.prompt("That ID is too large. Enter a smaller catID : ");
+	}
+	console.log(name);
+	console.log(maxRate);
+	console.log(portionGrams);
+	console.log(numPortions);
+	console.log(catID);
+	console.log(parseInt(catID));
+	var inUse = 0;
+	var catProfileIndex;
+
+//# CatID1 = 14155138199436
+//# CatID2 = 14155138203326
+//# CatID3 = 14155138203640
+	if(catID == 14155138199436)
+	{
+	  myStorage.setItem('catName1', name);
+	  myStorage.setItem('inUse1', 1);
+	  inUse = localStorage.getItem('inUse1');
+	  myStorage.setItem('maxRate1', maxRate);
+	  myStorage.setItem('portionGrams1', portionGrams);
+	  myStorage.setItem('numPortions1', numPortions);
+	  milliseconds1_cat1 = parseInt(milliseconds1_global);
+	  myStorage.setItem('milliseconds1_cat1', milliseconds1_cat1);
+	  milliseconds2_cat1 = parseInt(milliseconds2_global);
+	  myStorage.setItem('milliseconds2_cat1', milliseconds2_cat1);
+	  console.log(milliseconds1_cat1);
+	  milliseconds3_cat1 = parseInt(milliseconds3_global);
+	  myStorage.setItem('milliseconds3_cat1', milliseconds3_cat1);
+	  milliseconds4_cat1 = parseInt(milliseconds4_global);
+	  myStorage.setItem('milliseconds4_cat1', milliseconds4_cat1);
+	  milliseconds5_cat1 = parseInt(milliseconds5_global);
+	  myStorage.setItem('milliseconds5_cat1', milliseconds5_cat1);
+	  myStorage.setItem('catID1', catID);
+	  catProfileIndex = 0;
+	  myStorage.setItem('catProfileIndex',0);
+	  
+
+	}
+	if(catID == 14155138203326)
+	{
+		myStorage.setItem('catName2', name);
+		myStorage.setItem('inUse2', 1);
+		inUse = localStorage.getItem('inUse2');
+		myStorage.setItem('maxRate2', maxRate);
+		myStorage.setItem('portionGrams2', portionGrams);
+		myStorage.setItem('numPortions2', numPortions);
+		milliseconds1_cat2 = parseInt(milliseconds1_global);
+		myStorage.setItem('milliseconds1_cat2', milliseconds1_cat2);
+		milliseconds2_cat2 = parseInt(milliseconds2_global);
+	  	myStorage.setItem('milliseconds2_cat2', milliseconds2_cat2);
+		milliseconds3_cat2 = parseInt(milliseconds3_global);
+	  	myStorage.setItem('milliseconds3_cat2', milliseconds3_cat2);
+		milliseconds4_cat2 = parseInt(milliseconds4_global);
+	  	myStorage.setItem('milliseconds4_cat2', milliseconds4_cat2);
+		milliseconds5_cat2 = parseInt(milliseconds5_global);
+	 	myStorage.setItem('milliseconds5_cat2', milliseconds5_cat2);
+		myStorage.setItem('catID2', catID);
+		catProfileIndex = 1;
+		myStorage.setItem('catProfileIndex',1);
+	}
+	if(catID == 14155138203640)
+	{
+		myStorage.setItem('catName3', name);
+		myStorage.setItem('inUse3', 1);
+		inUse = localStorage.getItem('inUse3');
+		myStorage.setItem('maxRate3', maxRate);
+		myStorage.setItem('portionGrams3', portionGrams);
+		myStorage.setItem('numPortions3', numPortions);
+		milliseconds1_cat3 = parseInt(milliseconds1_global);
+		myStorage.setItem('milliseconds1_cat3', milliseconds1_cat3);
+		milliseconds2_cat3 = parseInt(milliseconds2_global);
+		myStorage.setItem('milliseconds2_cat3', milliseconds2_cat3);
+		milliseconds3_cat3 = parseInt(milliseconds3_global);
+		myStorage.setItem('milliseconds3_cat3', milliseconds3_cat3);
+		milliseconds4_cat3 = parseInt(milliseconds4_global);
+		myStorage.setItem('milliseconds4_cat3', milliseconds4_cat3);
+		milliseconds5_cat3 = parseInt(milliseconds5_global);
+		myStorage.setItem('milliseconds5_cat3', milliseconds5_cat3);
+	    myStorage.setItem('catID3', catID);
+		catProfileIndex = 2;
+		myStorage.setItem('catProfileIndex',2);
+	}
+ 	
+	const utf8Encoder = new TextEncoder();
+	var NumPortions = utf8Encoder.encode([NumPortions]); //string with numPortions
+	var unit8array = new TextDecoder().decode(NumPortions); //change to array
+	
+
+	currentCatName = name;
+	console.log(currentCatName);
+  	function sendData() {
+    const XHR = new XMLHttpRequest();
+	XHR.timeout = 1;
+	var buffer = new ArrayBuffer(58);
+	var view = new DataView(buffer);
+
+	view.setUint8(0, inUse)
+	view.setFloat32(1, parseFloat(maxRate))
+	view.setFloat32(5, parseFloat(portionGrams))
+	view.setUint8(9, numPortions)
+	view.setBigUint64(10, BigInt(milliseconds1))
+	view.setBigUint64(18, BigInt(milliseconds2))
+	view.setBigUint64(26, BigInt(milliseconds3))
+	view.setBigUint64(34, BigInt(milliseconds4))
+	view.setBigUint64(42, BigInt(milliseconds5))
+	view.setBigUint64(50, BigInt(catID))
+   
+	XHR.open("POST", "http://10.195.29.164:8000");
+	XHR.setRequestHeader("Cat-Profile-Index", catProfileIndex);
+    // The data sent is what the user provided in the form
+    XHR.send(view);
+	  }
+    sendData();
+  //} );
+
+	
+	</script>
+
+	<a href = "CatInfo.html">
+	<img src="CatPic.png" class="button1">
+	</a>
+	
+	<a href = "Graphs.html">
+	<img src="Graph.png" class="button2">
+	</a>
+</body>
+</html>
