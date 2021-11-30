@@ -184,6 +184,4 @@ start:
   }
 
   debugPrint("Amount Eaten", p->amountEaten);
-
-  printState(catIndex);
 }

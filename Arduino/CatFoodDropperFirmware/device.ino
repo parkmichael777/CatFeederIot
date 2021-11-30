@@ -1,19 +1,3 @@
-void printState(int i) {
-  if (i == -1 || (profileBuffer[i].inUse == 0)) {
-    verbosePrint("No cat nearby, or invalid/unknown id tag used.", NULL);
-    return;
-  }
-
-  verbosePrint("Cat Profile " + String(i + 1), NULL);
-
-  verbosePrint("Can Eat", profileBuffer[i].canEat);
-  verbosePrint("In Prog", profileBuffer[i].inProgress);
-  verbosePrint("Is Comp", profileBuffer[i].isComplete);
-  verbosePrint("Amt Eat", profileBuffer[i].amountEaten);
-
-  verbosePrint(NULL, NULL);
-}
-
 // Handles UART events using event queue. Boilerplate borrowed from official example.
 // https://github.com/espressif/esp-idf/tree/5f0c8f5/examples/peripherals/uart/uart_events
 void uartHandler(void *pvParameters) {
