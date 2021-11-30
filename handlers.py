@@ -129,7 +129,7 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
         message = self.rfile.read()
         
         self.server.profile_lock.acquire()
-        with open("CatProfiles", 'wb') as f:
+        with open("CatProfiles", 'r+b') as f:
             f.seek(58 * cat_profile)        # 58 bytes == len(cat profile)
             f.write(message)
             self.server.profile_version += 1
@@ -137,7 +137,7 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
         
         in_use, max_rate, portion_grams, num_portions, p0, p1, p2, p3, p4, cat_id = unpack("!BffBQQQQQQ", message)
         
-        print("Received Profiles:")
+        print("Received Profile:")
         print("    In Use:", in_use)
         print("    Max Rate:", max_rate)
         print("    Portion Grams:", portion_grams)
