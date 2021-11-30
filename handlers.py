@@ -128,33 +128,34 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
         cat_profile = int(self.headers["Cat-Profile-Index"])
         message = self.rfile.read()
         
-        self.server.profile_lock.acquire()
-        with open("CatProfiles", 'r+b') as f:
-            f.seek(58 * cat_profile)        # 58 bytes == len(cat profile)
-            f.write(message)
-            self.server.profile_version += 1
-        self.server.profile_lock.release()
-        
-        in_use, max_rate, portion_grams, num_portions, p0, p1, p2, p3, p4, cat_id = unpack("!BffBQQQQQQ", message)
-        
-        print("Received Profile:")
-        print("    In Use:", in_use)
-        print("    Max Rate:", max_rate)
-        print("    Portion Grams:", portion_grams)
-        print("    Num Portions:", num_portions)
-        print("    P0:", p0)
-        print("    P1:", p1)
-        print("    P2:", p2)
-        print("    P3:", p3)
-        print("    P4:", p4)
-        print("    Cat ID:", cat_id)
-        
-        # If a profile was deleted, delete the profile's data.
-        if in_use == 0:
-            self.server.data_lock.acquire()
-            shutil.rmtree(self.server.data_dir + "/" + str(cat_profile))
-            os.mkdir(self.server.data_dir + "/" + str(cat_profile))
-            self.server.data_lock.release()
+        if len(message) != 0:
+            self.server.profile_lock.acquire()
+            with open("CatProfiles", 'r+b') as f:
+                f.seek(58 * cat_profile)        # 58 bytes == len(cat profile)
+                f.write(message)
+                self.server.profile_version += 1
+            self.server.profile_lock.release()
+            
+            in_use, max_rate, portion_grams, num_portions, p0, p1, p2, p3, p4, cat_id = unpack("!BffBQQQQQQ", message)
+            
+            print("Received Profile:")
+            print("    In Use:", in_use)
+            print("    Max Rate:", max_rate)
+            print("    Portion Grams:", portion_grams)
+            print("    Num Portions:", num_portions)
+            print("    P0:", p0)
+            print("    P1:", p1)
+            print("    P2:", p2)
+            print("    P3:", p3)
+            print("    P4:", p4)
+            print("    Cat ID:", cat_id)
+            
+            # If a profile was deleted, delete the profile's data.
+            if in_use == 0:
+                self.server.data_lock.acquire()
+                shutil.rmtree(self.server.data_dir + "/" + str(cat_profile))
+                os.mkdir(self.server.data_dir + "/" + str(cat_profile))
+                self.server.data_lock.release()
 
     def do_GET(self):
         if self.headers["Cat-Request-Type"] == "device":
