@@ -15,6 +15,10 @@ if __name__ == "__main__":
     
     print("Starting server at", server.server_address[0] + ":" + str(server.server_address[1]))
     
+    # Create brand new cat profiles file
+    with open("CatProfiles", 'wb') as f:
+        f.write(b'0')
+    
     # CatID1 = 14155138199436
     # CatID2 = 14155138203326
     # CatID3 = 14155138203640
