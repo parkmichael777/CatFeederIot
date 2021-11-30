@@ -81,7 +81,7 @@ void updateState(catProfile *p) {
   TIME_T currTime = getTime();
   
   if (currTime < p->portionTimes[0]) {
-    debugPrint("Type 1 Waiting", NULL);
+    debugPrint("Before first time, Waiting", NULL);
     
     // System initialized with currTime < all portionTimes.
     TIME_T nextTime = p->portionTimes[0];
@@ -96,11 +96,11 @@ void updateState(catProfile *p) {
 
     // Initialize state and register based on which period we are in.
     if (currTime < prevTime + FEED_PERIOD) {
-      debugPrint("Type 2 Feeding", NULL);
+      debugPrint("After last time, Feeding", NULL);
       updateToFeeding(p, currTime, prevTime);
     }
     else {
-      debugPrint("Type 2 Waiting", NULL);
+      debugPrint("After last time, Waiting", NULL);
       updateToWaiting(p, currTime, nextTime);
     } 
   }
@@ -120,11 +120,11 @@ void updateState(catProfile *p) {
 
     // Initialize state and register based on which period we are in.
     if (currTime < prevTime + FEED_PERIOD) {
-      debugPrint("Type 3 Feeding", NULL);
+      debugPrint("Middle time, Feeding", NULL);
       updateToFeeding(p, currTime, prevTime);
     }
     else {
-      debugPrint("Type 3 Waiting", NULL);
+      debugPrint("Middle time, Waiting", NULL);
       updateToWaiting(p, currTime, nextTime);
     }
   }
