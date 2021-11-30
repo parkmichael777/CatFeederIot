@@ -41,11 +41,11 @@
 
 #define RFID_NEARBY   26              // RFID
 
-#define CELL_DOUT     19              // Load cell
-#define CELL_SCLK     21 
+#define CELL_DOUT     21              // Load cell
+#define CELL_SCLK     19 
 #define CELL_PWDN     18
-#define CELL_SPEED    23
-#define CELL_CALIB    -5990.0        // Tuned via a known control weight.
+#define CELL_SPEED    5
+#define CELL_CALIB    -6150.0        // Tuned via a known control weight.
 
 #define MOTOR_STBY    14
 #define MOTOR_IN1     12
